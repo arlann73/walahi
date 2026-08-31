@@ -39,3 +39,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# design & reference assets (internal only)
+bymonolog*.json
+portfolio-build-prompt.md
+portfolio arlan design.png
+Portfolio Modal asset/
+*.png
+!public/*.png
