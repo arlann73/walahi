@@ -1,52 +1,166 @@
 @import "tailwindcss";
 
+/* ─────────────────────────────────────────────────────────────
+   GLOBAL DESIGN SYSTEM — MONOLOG Portfolio
+   Source of truth: portfolio-build-prompt.md §1
+   All tokens, typography, and utility classes live here.
+   ───────────────────────────────────────────────────────────── */
+
+/* ── Color Tokens ── */
 :root {
-  --background: #080807;
-  --foreground: #E8E4DC;
-  --text-secondary: #A9A49B;
-  --highlight: #F1EEE7;
-  --primary: #6B645C;
-  --border-color: #38342F;
-  --muted: #6F6A63;
+  /* Background */
+  --bg:          #080807;  /* Near-black, warm — never pure #000 */
+  --background:  #080807;
+
+  /* Text hierarchy — value ladder, no hue accent */
+  --highlight:   #FAFAF9;  /* Spotlight: wordmark, primary CTA, active state ONLY — near-white like bymonolog */
+  --text:        #F0EDE6;  /* Text Primary — default for body copy and most headlines */
+  --foreground:  #F0EDE6;
+  --text-muted:  #C4BFB8;  /* Text Secondary — captions, metadata, dimmed list items */
+  --text-secondary: #C4BFB8;
+
+  /* Surface / Chrome */
+  --primary:     #6B645C;  /* Warm taupe — secondary surfaces, muted icons, UI chrome */
+  --muted:       #8A8580;  /* Disabled, placeholder, inactive */
+  --border-color: #38342F; /* Hairline 1px dividers — all borders are this weight */
+
+  /* Type scale — fluid clamp() per spec */
+  --fs-display:  clamp(96px, 14vw, 280px);  /* H1 / Hero: ARLAN, MONOLOG, CTA treatments */
+  --fs-h2:       clamp(48px, 7vw, 120px);   /* Section headliners */
+  --fs-h3:       clamp(28px, 3vw, 48px);    /* Card titles, step titles, subheads */
+  --fs-body:     18px;                       /* Paragraph copy, nav links, descriptions */
+  --fs-small:    12px;                       /* Captions, avatar meta rows */
+  --fs-mono:     11px;                       /* Timestamps, tags, clock — Geist Mono */
+
+  /* Letter spacing — tighten as size increases */
+  --ls-display:  -0.06em;
+  --ls-heading:  -0.04em;
+  --ls-body:     -0.02em;
+  --ls-mono:     0em;      /* Mono stays neutral, untracked */
 }
 
+/* ── Tailwind theme alias ── */
 @theme inline {
   --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-secondary: var(--text-secondary);
-  --color-highlight: var(--highlight);
-  --color-primary: var(--primary);
-  --color-border: var(--border-color);
-  --color-muted: var(--muted);
+  --color-foreground:  var(--foreground);
+  --color-highlight:   var(--highlight);
+  --color-secondary:   var(--text-secondary);
+  --color-primary:     var(--primary);
+  --color-border:      var(--border-color);
+  --color-muted:       var(--muted);
 
-  --font-sans: var(--font-outfit), sans-serif;
-  --font-mono: var(--font-geist-mono), monospace;
+  --font-sans:    var(--font-outfit), sans-serif;
+  --font-mono:    var(--font-geist-mono), monospace;
   --font-display: var(--font-outfit), sans-serif;
 }
 
+/* ── Base ── */
 body {
-  background-color: var(--background);
-  color: var(--foreground);
+  background-color: var(--bg);
+  color: var(--text);
   font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  letter-spacing: var(--ls-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Global grain/noise overlay */
+/* ─────────────────────────────────────────────────────────────
+   TYPOGRAPHY SYSTEM — Reusable across all sections
+   ───────────────────────────────────────────────────────────── */
+
+/*
+  .section-h1
+  ├── What:     Primary section title  (e.g. About, Journey, Skills, Projects)
+  ├── Semantic: <h2> — page <h1> is reserved for "ARLAN" in the Hero
+  ├── Scale:    H2 / Section Title per spec → clamp(48px, 7vw, 120px)
+  ├── Weight:   Bold
+  ├── Spacing:  -0.04em (heading tier)
+  ├── Color:    --highlight (#F1EEE7) — ONE use per section, acts as the spotlight
+  └── Rule:     One per section maximum. Never use for body labels or eyebrows.
+*/
+.section-h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(48px, 7vw, 120px);
+  letter-spacing: var(--ls-heading);
+  line-height: 0.9;
+  color: var(--highlight);
+  text-transform: uppercase;
+}
+
+/*
+  .section-h2
+  ├── What:     Sub-section label  (e.g. Selected Collaborations, Timeline, Services)
+  ├── Semantic: <h3> — within a section block
+  ├── Scale:    Mono / Technical → clamp(10px, 0.9vw, 13px)
+  ├── Weight:   400 (mono reads bold at any weight at this size)
+  ├── Spacing:  0.22em (wide — metadata register, not heading register)
+  ├── Color:    --muted (#6F6A63) — structural, not content
+  └── Rule:     Used for subsection labels only. No body text. Use sparingly.
+*/
+.section-h2 {
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: clamp(10px, 0.9vw, 13px);
+  letter-spacing: 0.22em;
+  line-height: 1;
+  color: var(--muted);
+  text-transform: uppercase;
+  display: block;
+}
+
+/*
+  .card-title
+  ├── What:     Card-level title (timeline cards, project cards, skill items)
+  ├── Semantic: <h3> or <h4> inside a card
+  ├── Scale:    H3 → clamp(28px, 3vw, 48px)
+  ├── Weight:   600
+  └── Spacing:  -0.04em
+*/
+.card-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(28px, 3vw, 48px);
+  letter-spacing: var(--ls-heading);
+  line-height: 1.1;
+  color: var(--text);
+}
+
+/*
+  .meta-label
+  ├── What:     Metadata chip / timestamp / tag (year, role, tool)
+  ├── Semantic: <span> or <time>
+  ├── Scale:    Mono / Technical → 11px
+  └── Color:    --muted
+*/
+.meta-label {
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   GRAIN / TEXTURE
+   Applied once globally — never add a second grain layer in components.
+   3% opacity: analog tactility without Instagram-filter feel.
+   ───────────────────────────────────────────────────────────── */
 body::after {
   content: "";
   position: fixed;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100vw;
   height: 100vh;
   pointer-events: none;
   z-index: 9999;
-  opacity: 0.05;
+  opacity: 0.03;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 }
 
-/* Base selection color */
+/* ── Selection ── */
 ::selection {
   background-color: var(--primary);
   color: var(--highlight);

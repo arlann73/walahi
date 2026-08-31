@@ -1,5 +1,7 @@
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/sections/HeroSection";
+import AboutSection from "@/components/sections/AboutSection";
+import JourneyTimelineSection from "@/components/sections/JourneyTimelineSection";
 
 export default function Home() {
   return (
@@ -13,11 +15,10 @@ export default function Home() {
           <HeroSection />
         </div>
         
-        {/* Next Sections (Slide up over the Hero) */}
-        <div className="relative z-10 w-full bg-background min-h-[100vh] flex items-center justify-center border-t border-white/5 shadow-2xl">
-          <p className="text-secondary font-mono tracking-widest text-[11px] uppercase">
-            Phase 2 Begins Here
-          </p>
+        {/* Sections that slide up over the Hero */}
+        <div className="relative z-10 w-full shadow-2xl">
+          <AboutSection />
+          <JourneyTimelineSection />
         </div>
         
       </div>
