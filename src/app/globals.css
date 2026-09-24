@@ -1,63 +1,182 @@
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@700;800&display=swap');
 @import "tailwindcss";
 
 /* ─────────────────────────────────────────────────────────────
-   GLOBAL DESIGN SYSTEM — MONOLOG Portfolio
-   Source of truth: portfolio-build-prompt.md §1
-   All tokens, typography, and utility classes live here.
+   GLOBAL DESIGN SYSTEM — PRASTYO ARLAN PORTFOLIO
+   Source of Truth: DESIGN.md (v5) & .agents/rules/design.md
    ───────────────────────────────────────────────────────────── */
 
-/* ── Color Tokens ── */
 :root {
-  /* Background */
-  --bg:          #080807;  /* Near-black, warm — never pure #000 */
-  --background:  #080807;
+  /* ── Colors: Canonical Tokens (DESIGN.md Section 2) ── */
+  --color-bg:                  #08090A;  /* Deep obsidian canvas background */
+  --bg:                        #08090A;
+  --background:                #08090A;
 
-  /* Text hierarchy — value ladder, no hue accent */
-  --highlight:   #FAFAF9;  /* Spotlight: wordmark, primary CTA, active state ONLY — near-white like bymonolog */
-  --text:        #F0EDE6;  /* Text Primary — default for body copy and most headlines */
-  --foreground:  #F0EDE6;
-  --text-muted:  #C4BFB8;  /* Text Secondary — captions, metadata, dimmed list items */
-  --text-secondary: #C4BFB8;
+  --color-surface:             #161819;  /* Dark Surface / Card fill / Capsule menu */
+  --surface:                   #161819;
 
-  /* Surface / Chrome */
-  --primary:     #6B645C;  /* Warm taupe — secondary surfaces, muted icons, UI chrome */
-  --muted:       #8A8580;  /* Disabled, placeholder, inactive */
-  --border-color: #38342F; /* Hairline 1px dividers — all borders are this weight */
+  --color-surface-glass:       rgba(20, 22, 22, 0.50); /* Frosted glass containers */
+  --color-nav-hover-bg:        #383531;  /* Warm-charcoal expansion background on navbar hover */
 
-  /* Type scale — fluid clamp() per spec */
-  --fs-display:  clamp(96px, 14vw, 280px);  /* H1 / Hero: ARLAN, MONOLOG, CTA treatments */
-  --fs-h2:       clamp(48px, 7vw, 120px);   /* Section headliners */
-  --fs-h3:       clamp(28px, 3vw, 48px);    /* Card titles, step titles, subheads */
-  --fs-body:     18px;                       /* Paragraph copy, nav links, descriptions */
-  --fs-small:    12px;                       /* Captions, avatar meta rows */
-  --fs-mono:     11px;                       /* Timestamps, tags, clock — Geist Mono */
+  --color-text:                #E2E2DD;  /* Chalk White: Headings, primary text, active items */
+  --highlight:                 #E2E2DD;
+  --text:                      #E2E2DD;
+  --foreground:                #E2E2DD;
+  --color-primary:             #E2E2DD;
+  --color-accent:              #E2E2DD;
+  --color-link:                #E2E2DD;
 
-  /* Letter spacing — tighten as size increases */
-  --ls-display:  -0.06em;
-  --ls-heading:  -0.04em;
-  --ls-body:     -0.02em;
-  --ls-mono:     0em;      /* Mono stays neutral, untracked */
+  --color-text-secondary:      #908C87;  /* Muted Stone Gray: Secondary descriptions, mono tags */
+  --text-secondary:            #908C87;
+  --color-secondary:           #908C87;
+
+  --color-border:              rgba(226, 226, 221, 0.14); /* Subtle hairline border */
+  --border-color:              rgba(226, 226, 221, 0.14);
+  --color-border-hover:        rgba(255, 255, 255, 0.30); /* Active button / focused borders */
+
+  --color-section-accent:      #D8382B;  /* Canonical Editorial Red: Lower section background */
+  --color-section-accent-foreground: #111213; /* Dark obsidian text on red accent */
+  --color-text-on-accent:      #FFFFFF;  /* High-contrast pure white text for reading copy on red */
+  --color-section-accent-muted: rgba(17, 18, 19, 0.70); /* Secondary metadata/tags on red */
+
+  --color-btn-hover-bg:        #FFFFFF;  /* Pure white illuminated button hover */
+  --color-cta-hover-bg:        #D8D8D2;  /* Off-white shift on "LET'S TALK" CTA hover */
+  --color-cta-icon-bg:         #0A0A09;  /* Dark obsidian box for CTA diagonal arrow */
+
+  --color-cursor:              #FFD000;  /* 8px precision cursor trail */
+  --color-signal:              #FFD904;  /* Operational studio pulse & active indicator dots */
+  --color-alert:               #FF3B30;  /* System alerts & warning states */
+
+  --color-selection-bg:        #E2E2DD;  /* Selection highlight on dark canvas */
+  --color-selection-fg:        #010101;  /* Selection text color on dark canvas */
+  --color-selection-accent-bg: #111213;  /* Dark obsidian selection on red accent */
+  --color-selection-accent-fg: #F4F2ED;  /* Chalk selection text on red accent */
+
+  /* ── Spacing Unit (Base unit = 4px) ── */
+  --spacing-base:              4px;
+
+  /* ── Radii Tokens ── */
+  --radius-hairline:           1.5px;
+  --radius-micro:              2px;
+  --radius-sm:                 3px;
+  --radius-squircle:           5.33px;  /* Lama Lama signature squircle */
+  --border-radius:             5.33px;
+  --radius-card:               28px;
+  --radius-card-lg:            32px;
+  --radius-full:               9999px;
+
+  /* ── Typography Scale & Metric Tokens ── */
+  --fs-h1:                     clamp(44px, 6.6vw, 96px); /* Exact h1: 95.9999px */
+  --fs-h2:                     clamp(32px, 4.4vw, 64px); /* Exact h2: 64.064px */
+  --fs-body:                   18px;
+  --fs-mono:                   11px;
+
+  --ls-heading:                -0.04em;
+  --ls-body:                   -0.01em;
+  --ls-mono:                   0.22em;
+
+  /* ── Motion Tokens (DESIGN.md Section 10) ── */
+  --duration-fast:             0.3s;
+  --duration-medium:           0.5s;
+  --duration-normal:           0.85s;
+  --duration-slow:             1.2s;
+  --duration-kinetic:          0.95s;
+  --duration-micro:            0.2s;
+  --duration-stagger:          0.07s;
+  --duration-ticker:           0.32s;
+  --duration-timeline:         8.5s;
+
+  --ease-out-expo:             cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-editorial:            cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring:               cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* ── Tailwind theme alias ── */
+/* ── Tailwind Theme Mapping ── */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground:  var(--foreground);
-  --color-highlight:   var(--highlight);
-  --color-secondary:   var(--text-secondary);
-  --color-primary:     var(--primary);
-  --color-border:      var(--border-color);
-  --color-muted:       var(--muted);
+  /* Color Utility Classes */
+  --color-background:          var(--color-bg);
+  --color-canvas:              var(--color-bg);
+  --color-surface:             var(--color-surface);
+  --color-surface-glass:       var(--color-surface-glass);
+  --color-nav-hover:           var(--color-nav-hover-bg);
 
-  --font-sans:    var(--font-outfit), sans-serif;
-  --font-mono:    var(--font-geist-mono), monospace;
-  --font-display: var(--font-outfit), sans-serif;
+  --color-foreground:          var(--color-text);
+  --color-chalk:               var(--color-text);
+  --color-primary:             var(--color-text);
+  --color-highlight:           var(--color-text);
+  --color-accent:              var(--color-text);
+
+  --color-muted:               var(--color-text-secondary);
+  --color-secondary:           var(--color-text-secondary);
+
+  --color-border:              var(--color-border);
+  --color-border-hairline:     var(--color-border);
+  --color-border-hover:        var(--color-border-hover);
+
+  --color-section-accent:      var(--color-section-accent);
+  --color-accent-fg:           var(--color-section-accent-foreground);
+  --color-text-on-accent:      var(--color-text-on-accent);
+  --color-accent-muted:        var(--color-section-accent-muted);
+
+  --color-btn-hover:           var(--color-btn-hover-bg);
+  --color-cta-hover:           var(--color-cta-hover-bg);
+  --color-cta-icon:            var(--color-cta-icon-bg);
+
+  --color-cursor:              var(--color-cursor);
+  --color-signal:              var(--color-signal);
+  --color-alert:               var(--color-alert);
+
+  /* Radius Utility Classes */
+  --radius-hairline:           var(--radius-hairline);
+  --radius-micro:              var(--radius-micro);
+  --radius-sm:                 var(--radius-sm);
+  --radius-squircle:           var(--radius-squircle);
+  --radius-card:               var(--radius-card);
+  --radius-card-lg:            var(--radius-card-lg);
+
+  /* Font Families */
+  --font-sans:                 var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono:                 var(--font-geist-mono), ui-monospace, monospace;
+  --font-display:              var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-serif:                'Newsreader', 'Cormorant Garamond', Georgia, serif;
+  --font-editorial:            'Newsreader', 'Cormorant Garamond', Georgia, serif;
+  --font-jakarta:              'Plus Jakarta Sans', var(--font-geist-sans), sans-serif;
+
+  --font-pixel-square:         var(--font-geist-pixel-square), var(--font-geist-mono), monospace;
+  --font-pixel-grid:           var(--font-geist-pixel-grid), var(--font-geist-mono), monospace;
+  --font-pixel-circle:         var(--font-geist-pixel-circle), var(--font-geist-mono), monospace;
+  --font-pixel-triangle:       var(--font-geist-pixel-triangle), var(--font-geist-mono), monospace;
+  --font-pixel-line:           var(--font-geist-pixel-line), var(--font-geist-mono), monospace;
+}
+
+/* ── Geist Pixel Explicit Utility Classes ── */
+.font-pixel-square {
+  font-family: var(--font-geist-pixel-square), var(--font-geist-mono), monospace;
+}
+.font-pixel-grid {
+  font-family: var(--font-geist-pixel-grid), var(--font-geist-mono), monospace;
+}
+.font-pixel-circle {
+  font-family: var(--font-geist-pixel-circle), var(--font-geist-mono), monospace;
+}
+.font-pixel-triangle {
+  font-family: var(--font-geist-pixel-triangle), var(--font-geist-mono), monospace;
+}
+.font-pixel-line {
+  font-family: var(--font-geist-pixel-line), var(--font-geist-mono), monospace;
+}
+
+/* ── Editorial Luxury Serif (Newsreader / Cormorant) ── */
+.font-editorial {
+  font-family: 'Newsreader', 'Cormorant Garamond', Georgia, serif;
+  font-feature-settings: "liga" 1, "dlig" 1, "kern" 1;
+  font-optical-sizing: auto;
 }
 
 /* ── Base ── */
 body {
-  background-color: var(--bg);
-  color: var(--text);
+  background-color: var(--color-bg);
+  color: var(--color-text);
   font-family: var(--font-sans);
   font-size: var(--fs-body);
   letter-spacing: var(--ls-body);
@@ -65,103 +184,185 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ─────────────────────────────────────────────────────────────
-   TYPOGRAPHY SYSTEM — Reusable across all sections
-   ───────────────────────────────────────────────────────────── */
+/* ── Headings (Suisse / Grotesque Style) ── */
+.display-h1 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--fs-h1);
+  letter-spacing: var(--ls-heading);
+  line-height: 0.92;
+  color: var(--color-text);
+  text-transform: uppercase;
+}
 
-/*
-  .section-h1
-  ├── What:     Primary section title  (e.g. About, Journey, Skills, Projects)
-  ├── Semantic: <h2> — page <h1> is reserved for "ARLAN" in the Hero
-  ├── Scale:    H2 / Section Title per spec → clamp(48px, 7vw, 120px)
-  ├── Weight:   Bold
-  ├── Spacing:  -0.04em (heading tier)
-  ├── Color:    --highlight (#F1EEE7) — ONE use per section, acts as the spotlight
-  └── Rule:     One per section maximum. Never use for body labels or eyebrows.
-*/
-.section-h1 {
+.display-h2 {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: clamp(48px, 7vw, 120px);
+  font-size: var(--fs-h2);
   letter-spacing: var(--ls-heading);
-  line-height: 0.9;
-  color: var(--highlight);
+  line-height: 1.05;
+  color: var(--color-text);
   text-transform: uppercase;
 }
 
-/*
-  .section-h2
-  ├── What:     Sub-section label  (e.g. Selected Collaborations, Timeline, Services)
-  ├── Semantic: <h3> — within a section block
-  ├── Scale:    Mono / Technical → clamp(10px, 0.9vw, 13px)
-  ├── Weight:   400 (mono reads bold at any weight at this size)
-  ├── Spacing:  0.22em (wide — metadata register, not heading register)
-  ├── Color:    --muted (#6F6A63) — structural, not content
-  └── Rule:     Used for subsection labels only. No body text. Use sparingly.
-*/
-.section-h2 {
+/* ── Monospaced Badges & Metadata ── */
+.mono-label {
   font-family: var(--font-mono);
-  font-weight: 400;
-  font-size: clamp(10px, 0.9vw, 13px);
-  letter-spacing: 0.22em;
-  line-height: 1;
-  color: var(--muted);
-  text-transform: uppercase;
-  display: block;
-}
-
-/*
-  .card-title
-  ├── What:     Card-level title (timeline cards, project cards, skill items)
-  ├── Semantic: <h3> or <h4> inside a card
-  ├── Scale:    H3 → clamp(28px, 3vw, 48px)
-  ├── Weight:   600
-  └── Spacing:  -0.04em
-*/
-.card-title {
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: clamp(28px, 3vw, 48px);
-  letter-spacing: var(--ls-heading);
-  line-height: 1.1;
-  color: var(--text);
-}
-
-/*
-  .meta-label
-  ├── What:     Metadata chip / timestamp / tag (year, role, tool)
-  ├── Semantic: <span> or <time>
-  ├── Scale:    Mono / Technical → 11px
-  └── Color:    --muted
-*/
-.meta-label {
-  font-family: var(--font-mono);
-  font-weight: 400;
   font-size: var(--fs-mono);
   letter-spacing: var(--ls-mono);
-  color: var(--muted);
+  color: var(--color-text-secondary);
   text-transform: uppercase;
 }
 
-/* ─────────────────────────────────────────────────────────────
-   GRAIN / TEXTURE
-   Applied once globally — never add a second grain layer in components.
-   3% opacity: analog tactility without Instagram-filter feel.
-   ───────────────────────────────────────────────────────────── */
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100vh;
-  pointer-events: none;
-  z-index: 9999;
-  opacity: 0.03;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+/* ── Button Components (Lama Lama Signature Specs) ── */
+.btn-primary {
+  background-color: var(--color-accent);
+  color: #010101;
+  border-radius: var(--radius-squircle);
+  padding: 8px 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-primary:hover {
+  background-color: var(--color-btn-hover-bg);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background-color: var(--color-surface);
+  color: var(--color-accent);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-squircle);
+  padding: 6px 12px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-secondary:hover {
+  border-color: var(--color-border-hover);
+  color: #ffffff;
+}
+
+/* ── Card / Surface ── */
+.card-surface {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-squircle);
+  backdrop-filter: blur(12px);
 }
 
 /* ── Selection ── */
 ::selection {
-  background-color: var(--primary);
-  color: var(--highlight);
+  background-color: var(--color-selection-bg);
+  color: var(--color-selection-fg);
+}
+
+/* ── Ultra-Smooth Editorial Headline Reveal Keyframes ── */
+@keyframes headlineSlideUpFromBottom {
+  0% {
+    transform: translateY(50%);
+    opacity: 0;
+    filter: blur(4px);
+  }
+  40% {
+    opacity: 0.75;
+  }
+  100% {
+    transform: translateY(0%);
+    opacity: 1;
+    filter: blur(0px);
+  }
+}
+
+.headline-text-mask {
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 12%,
+    black 88%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 12%,
+    black 88%,
+    transparent 100%
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────
+   PURE CANVAS GLOBAL SCROLLBAR CONCEALMENT (LAMA LAMA ARCHETYPE)
+   Eliminates native scrollbars while preserving 100% fluid scroll
+   ───────────────────────────────────────────────────────────── */
+html,
+body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  overscroll-behavior-y: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* ── Hide Scrollbar Utility ── */
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   LENIS SMOOTH SCROLL FOUNDATION & NORMALIZATION
+   ───────────────────────────────────────────────────────────── */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   TIMELINE SOLID FILL LOADER ANIMATION (8.5s Left-to-Right)
+   ───────────────────────────────────────────────────────────── */
+@keyframes timelineLoaderClip {
+  0% {
+    clip-path: inset(0 100% 0 0);
+  }
+  100% {
+    clip-path: inset(0 0% 0 0);
+  }
 }

@@ -47,3 +47,29 @@ portfolio arlan design.png
 Portfolio Modal asset/
 *.png
 !public/*.png
+
+# python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# test results & reports
+/test-results/
+/playwright-report/
+
+# scratch files
+scratch_*.txt
+*.tmp
+
+# large source assets and backups
+/asset/
+*.backup.*
+*.backup.glb
+
+# internal skills, brand research & scraper (keep local only)
+/.agents/
+/brands/
+/brand-guidelines/
+/brand-scrapper/
+skills-lock.json
+/.vscode/

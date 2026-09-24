@@ -1,17 +1,16 @@
 import type { Metadata } from "next";
-import { Outfit, Geist_Mono } from "next/font/google";
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
+import {
+  GeistPixelSquare,
+  GeistPixelGrid,
+  GeistPixelCircle,
+  GeistPixelTriangle,
+  GeistPixelLine,
+} from "geist/font/pixel";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
-
-const outfit = Outfit({
-  variable: "--font-outfit",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import FilmGrain from "@/components/FilmGrain";
 
 export const metadata: Metadata = {
   title: "ARLAN | Digital Designer & Creative Developer",
@@ -26,12 +25,17 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${outfit.variable} ${geistMono.variable} h-full antialiased`}
+      suppressHydrationWarning
+      className={`${GeistSans.variable} ${GeistMono.variable} ${GeistPixelSquare.variable} ${GeistPixelGrid.variable} ${GeistPixelCircle.variable} ${GeistPixelTriangle.variable} ${GeistPixelLine.variable} h-full antialiased no-scrollbar font-sans`}
     >
-      <body className="min-h-full flex flex-col bg-background text-foreground overflow-x-hidden selection:bg-primary selection:text-highlight">
+      <body
+        suppressHydrationWarning
+        className="min-h-full flex flex-col bg-background text-foreground overflow-x-hidden selection:bg-primary selection:text-highlight no-scrollbar font-sans"
+      >
         <SmoothScroll>
           {children}
         </SmoothScroll>
+        <FilmGrain />
       </body>
     </html>
   );
