@@ -224,7 +224,7 @@ export default function AboutPortfolioSection() {
       <div className="relative z-10 w-full pt-14 md:pt-20 pb-20 md:pb-28 px-5 md:px-8">
         {/* Hero / Headline Statement */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-y-6 about-fade-el will-change-[transform,opacity]" data-purpose="hero-statement">
-          <div className="md:col-start-4 md:col-span-9 max-w-[1040px]">
+          <div className="col-span-12 max-w-[1480px]">
             <p className="text-h2 text-[#F9F4EB]">
               my work focuses on geological exploration and geological modeling. with a strong foundation in geological engineering from institut teknologi sumatera and internship experience at pt pertamina hulu rokan, i strive to provide reliable subsurface insights that bridge field exploration and computational geology.
             </p>

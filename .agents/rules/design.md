@@ -83,7 +83,7 @@ Colors must be implemented via semantic CSS variables:
 - **Trailing Tracking Compensation**: `.text-mono-center` (`margin-right: -0.14em`) on center-aligned wide tracking labels
 
 ### Section Statement Typographic Architecture
-- **About Me Manifesto (`AboutPortfolioSection.tsx`)**: `.text-h2` (`26px` $\rightarrow$ `40px`), weight `600` canonical token, container `max-w-[1040px]` (~50ch, col-start-4 col-span-9), `<p>`.
+- **About Me Manifesto (`AboutPortfolioSection.tsx`)**: `.text-h2` (`26px` $\rightarrow$ `40px`), weight `600` canonical token, container `max-w-[1480px]` (col-span-12 rata kiri penuh, 4 baris pada layar lebar), `<p>`. Technical sub-sections below retain `col-start-4` & `col-start-7` indentation.
 - **Featured Work Positioning (`FeaturedWorkSection.tsx`)**: `.text-h2` (`26px` $\rightarrow$ `40px`), weight `600` canonical token, container `max-w-[1040px]` (~50ch), `<h2>` with inner lines for GSAP reveal.
 - **What I Do (`WhatIDoSection.tsx`)**: Header title `.text-h1` (`34px` $\rightarrow$ `56px`, standard weight, no `font-black`), mission statement `.text-h3` (`20px` $\rightarrow$ `28px`, continuous fluid, no `sm:text-h2` jump), maintaining 2:1 harmonic octave ratio (56px : 28px).
 
