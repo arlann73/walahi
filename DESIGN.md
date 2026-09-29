@@ -125,7 +125,7 @@ Untuk mempertahankan konsistensi hirarki editorial lintas section (Cross-Section
 1. **About Me — Editorial Manifesto Statement (`AboutPortfolioSection.tsx`)**:
    - **Token**: `.text-h2` (`26px` $\rightarrow$ `40px`, leading `1.15`, tracking `-0.02em`).
    - **Weight**: Native canonical token weight (`600`), tanpa override `font-normal`.
-   - **Measure / Width**: `max-w-[1480px]` rata kiri penuh (`col-span-12`), membentang melintasi 12 kolom untuk menghasilkan ritme 4 baris yang seimbang pada layar lebar (~75 karakter per baris). Rincian teknis di bawahnya (`background`, `focus`, dll.) tetap berindentasi pada `col-start-4` & `col-start-7` untuk menciptakan kontras editorial asimetris Swiss modern.
+   - **Measure & Indent**: `max-w-[1480px]` rata kiri penuh (`col-span-12`). Baris pertama memiliki indentasi editorial buku `indent-[calc(100%/12)]` (mulai dari kolom 2 dari 12-grid), sementara baris 2–4 mulai rata kiri dari kolom 1 untuk menghasilkan tata letak 4 baris yang harmonis pada layar lebar. Rincian teknis di bawahnya (`background`, `focus`, dll.) tetap berindentasi pada `col-start-4` & `col-start-7`.
    - **Semantics**: Tag `<p>` naratif editorial dengan prefix tag `[about]`.
 
 2. **Featured Work — Positioning & Transition Statement (`FeaturedWorkSection.tsx`)**:
