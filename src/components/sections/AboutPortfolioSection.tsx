@@ -226,7 +226,9 @@ export default function AboutPortfolioSection() {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-y-6 about-fade-el will-change-[transform,opacity]" data-purpose="hero-statement">
           <div className="col-span-12 max-w-[1480px]">
             <p className="text-h2 text-[#F9F4EB] indent-[calc(100%/12)]">
-              my work focuses on geological exploration and geological modeling. with a strong foundation in geological engineering from institut teknologi sumatera and internship experience, i strive to provide reliable subsurface insights that bridge field exploration and computational geology.
+              my work focuses on geological exploration and geological modeling.
+              <br className="hidden 2xl:inline" />{" "}
+              with a strong foundation in geological engineering from institut teknologi sumatera and internship experience, i strive to provide reliable subsurface insights that bridge field exploration and computational geology.
             </p>
           </div>
         </div>
