@@ -12,6 +12,8 @@ interface AsciiPortraitCanvasProps {
   opacity?: number;
   showHud?: boolean;
   hudPosition?: "bottom-left" | "bottom-right" | "top-left";
+  align?: "left" | "center";
+  maskGradient?: string;
   className?: string;
 }
 
@@ -44,7 +46,9 @@ export default function AsciiPortraitCanvas({
   force = 24,
   opacity = 0.65,
   showHud = true,
-  hudPosition = "bottom-right",
+  hudPosition = "bottom-left",
+  align = "left",
+  maskGradient = "linear-gradient(to bottom, black 80%, transparent 100%)",
   className = "",
 }: AsciiPortraitCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -345,15 +349,19 @@ export default function AsciiPortraitCanvas({
   return (
     <div
       ref={containerRef}
-      className={`relative w-full h-full flex items-center justify-center pointer-events-none select-none ${className}`}
+      className={`relative w-full h-full flex ${
+        align === "left"
+          ? "items-start justify-start"
+          : "items-center justify-center"
+      } pointer-events-none select-none ${className}`}
     >
       {/* Real-time ASCII Canvas */}
       <canvas
         ref={canvasRef}
         style={{
           opacity,
-          maskImage: "linear-gradient(to bottom, black 45%, rgba(0,0,0,0.6) 68%, transparent 92%)",
-          WebkitMaskImage: "linear-gradient(to bottom, black 45%, rgba(0,0,0,0.6) 68%, transparent 92%)",
+          maskImage: maskGradient,
+          WebkitMaskImage: maskGradient,
         }}
         className="will-change-transform drop-shadow-[0_0_24px_rgba(249,244,235,0.06)]"
       />

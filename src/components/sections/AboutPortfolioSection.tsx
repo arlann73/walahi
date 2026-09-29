@@ -105,24 +105,6 @@ export default function AboutPortfolioSection() {
       <div aria-hidden="true" className="absolute top-0 bottom-0 left-[74.5%] w-[1px] bg-white/[0.07] pointer-events-none z-[1]" />
       <div aria-hidden="true" className="absolute top-0 bottom-0 right-[2%] w-[1px] bg-white/[0.07] pointer-events-none z-[1]" />
 
-      {/* ── Interactive Realtime Optical ASCII Portrait Shader Backdrop (Positioned behind editorial headline) ── */}
-      <div
-        ref={asciiRef}
-        aria-hidden="true"
-        className="absolute top-8 md:top-12 left-0 right-0 h-[640px] md:h-[720px] lg:h-[760px] overflow-hidden pointer-events-none z-[2] select-none flex items-center justify-center will-change-transform"
-      >
-        <AsciiPortraitCanvas
-          src="/arlan-face.jpg"
-          charSize={5.5}
-          contrast={1.48}
-          brightness={0.04}
-          radius={125}
-          force={24}
-          opacity={0.65}
-          showHud={true}
-        />
-      </div>
-
       {/* ── Section Header: Identity, Column Tabs & Portrait Thumbnail ── */}
       <header className="relative z-10 w-full pt-6 md:pt-8 px-5 md:px-8 flex justify-between items-start">
         {/* Brand / Identity */}
@@ -174,11 +156,32 @@ export default function AboutPortfolioSection() {
         </div>
 
         {/* Structured 4-Section Body Grid (background, focus, experience, contact) */}
-        <div className="mt-20 md:mt-28 space-y-14 md:space-y-20">
+        <div className="relative mt-20 md:mt-28 space-y-14 md:space-y-20">
+          {/* ── Interactive Realtime Optical ASCII Portrait Shader (Rata kiri mulai grid kolom 1) ── */}
+          <div
+            ref={asciiRef}
+            aria-hidden="true"
+            className="absolute -top-12 bottom-0 left-0 w-full md:w-[44%] lg:w-[38%] pointer-events-none z-0 select-none flex items-start justify-start will-change-transform overflow-hidden"
+          >
+            <AsciiPortraitCanvas
+              src="/arlan-face.jpg"
+              charSize={5.5}
+              contrast={1.48}
+              brightness={0.04}
+              radius={120}
+              force={24}
+              opacity={0.65}
+              showHud={true}
+              hudPosition="bottom-left"
+              align="left"
+              maskGradient="linear-gradient(to bottom, black 85%, transparent 100%)"
+            />
+          </div>
+
           {/* SECTION 1: Background */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-y-2 about-fade-el will-change-[transform,opacity]" data-purpose="section-background">
+          <div className="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-y-2 about-fade-el will-change-[transform,opacity]" data-purpose="section-background">
             <div className="md:col-start-4 md:col-span-2">
-              <h3 className="text-subtitle-2 lowercase tracking-tight text-white/50 pt-[2px]">
+              <h3 className="text-subtitle-2 lowercase tracking-tight text-[#F9F4EB]/90 font-medium pt-[2px]">
                 background
               </h3>
             </div>
@@ -190,9 +193,9 @@ export default function AboutPortfolioSection() {
           </div>
 
           {/* SECTION 2: Focus */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-y-2 about-fade-el will-change-[transform,opacity]" data-purpose="section-focus">
+          <div className="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-y-2 about-fade-el will-change-[transform,opacity]" data-purpose="section-focus">
             <div className="md:col-start-4 md:col-span-2">
-              <h3 className="text-subtitle-2 lowercase tracking-tight text-white/50 pt-[2px]">
+              <h3 className="text-subtitle-2 lowercase tracking-tight text-[#F9F4EB]/90 font-medium pt-[2px]">
                 focus
               </h3>
             </div>
@@ -204,9 +207,9 @@ export default function AboutPortfolioSection() {
           </div>
 
           {/* SECTION 3: Experience */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-y-2 about-fade-el will-change-[transform,opacity]" data-purpose="section-experience">
+          <div className="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-y-2 about-fade-el will-change-[transform,opacity]" data-purpose="section-experience">
             <div className="md:col-start-4 md:col-span-2">
-              <h3 className="text-subtitle-2 lowercase tracking-tight text-white/50 pt-[2px]">
+              <h3 className="text-subtitle-2 lowercase tracking-tight text-[#F9F4EB]/90 font-medium pt-[2px]">
                 experience
               </h3>
             </div>
@@ -218,9 +221,9 @@ export default function AboutPortfolioSection() {
           </div>
 
           {/* SECTION 4: Contact */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-y-2 about-fade-el will-change-[transform,opacity]" data-purpose="section-contact">
+          <div className="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-y-2 about-fade-el will-change-[transform,opacity]" data-purpose="section-contact">
             <div className="md:col-start-4 md:col-span-2">
-              <h3 className="text-subtitle-2 lowercase tracking-tight text-white/50 pt-[1px]">
+              <h3 className="text-subtitle-2 lowercase tracking-tight text-[#F9F4EB]/90 font-medium pt-[1px]">
                 contact
               </h3>
             </div>
