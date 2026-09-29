@@ -9,6 +9,8 @@ interface AsciiPortraitCanvasProps {
   brightness?: number;
   radius?: number;
   force?: number;
+  charsetKey?: "kaspar" | "numeric" | "geometric" | "dense";
+  invert?: boolean;
   opacity?: number;
   showHud?: boolean;
   hudPosition?: "bottom-left" | "bottom-right" | "top-left";
@@ -20,6 +22,7 @@ interface AsciiPortraitCanvasProps {
 const GLYPH_RAMPS = {
   kaspar: [" ", " ", ".", ":", "-", "+", "=", "*", "%", "#", "@"],
   numeric: [" ", " ", "1", "0", "7", "3", "5", "8", "9", "4"],
+  geometric: [" ", ".", "/", "\\", "|", "(", ")", "[", "]", "{", "}", "#"],
   dense: [
     " ", ".", "'", "`", "^", "\"", ",", ":", ";", "I", "l", "!", "i", ">", "<",
     "~", "+", "_", "-", "?", "]", "[", "}", "{", "1", ")", "(", "|", "\\", "/",
@@ -44,6 +47,8 @@ export default function AsciiPortraitCanvas({
   brightness = 0.04,
   radius = 125,
   force = 24,
+  charsetKey = "kaspar",
+  invert = false,
   opacity = 0.65,
   showHud = true,
   hudPosition = "bottom-left",
@@ -92,7 +97,7 @@ export default function AsciiPortraitCanvas({
     let lastHudUpdate = 0;
 
     let points: SamplePoint[] = [];
-    const palette = GLYPH_RAMPS.kaspar;
+    const palette = GLYPH_RAMPS[charsetKey] || GLYPH_RAMPS.kaspar;
     const paletteMax = palette.length - 1;
 
     // Pre-calculate sample points whenever canvas dimensions or image change
@@ -149,10 +154,19 @@ export default function AsciiPortraitCanvas({
           // ITU-R BT.601 Perceptual Luminance
           let lum = (0.299 * red + 0.587 * green + 0.114 * blue) / 255;
 
-          // Invert: White studio background of photo (lum=1.0) maps to space (' ')
-          // Darker portrait features (hair, suit, facial contours) map to dense ASCII glyphs
-          lum = 1.0 - lum;
-          lum = Math.pow(Math.max(0, Math.min(1, lum + brightness)), contrast);
+          // Brightness offset
+          lum += brightness;
+
+          // Optical contrast curve
+          lum = Math.pow(Math.max(0, Math.min(1, lum)), contrast);
+
+          // Invert: White studio background (lum=1.0) maps to space (' ')
+          // Darker portrait features map to dense ASCII glyphs
+          if (!invert) {
+            lum = 1.0 - lum;
+          }
+
+          lum = Math.max(0, Math.min(1, lum));
 
           const charIdx = Math.floor(lum * paletteMax);
           const glyph = palette[charIdx];
@@ -344,7 +358,7 @@ export default function AsciiPortraitCanvas({
       window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("touchend", handleMouseLeave);
     };
-  }, [src, charSize, contrast, brightness, radius, force]);
+  }, [src, charSize, contrast, brightness, radius, force, charsetKey, invert]);
 
   return (
     <div
