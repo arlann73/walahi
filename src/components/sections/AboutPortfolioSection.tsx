@@ -14,7 +14,7 @@ export default function AboutPortfolioSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const portraitRef = useRef<HTMLDivElement>(null);
   const asciiRef = useRef<HTMLDivElement>(null);
-  const [avatarSrc, setAvatarSrc] = useState("/arlan-face.jpg");
+  const [avatarSrc, setAvatarSrc] = useState("/arlan-face-dark.jpg");
 
   // GSAP Hover on portrait thumbnail
   const handlePortraitEnter = () => {
@@ -157,20 +157,23 @@ export default function AboutPortfolioSection() {
 
         {/* Structured 4-Section Body Grid (background, focus, experience, contact) */}
         <div className="relative mt-20 md:mt-28 space-y-14 md:space-y-20">
-          {/* ── Interactive Realtime Optical ASCII Portrait Shader (Rata kiri mulai grid kolom 1) ── */}
+          {/* ── Interactive Realtime Optical ASCII Portrait Shader (Rata kiri mulai grid kolom 1 sampai kolom 8) ── */}
           <div
             ref={asciiRef}
             aria-hidden="true"
-            className="absolute -top-12 bottom-0 left-0 w-full md:w-[44%] lg:w-[38%] pointer-events-none z-0 select-none flex items-start justify-start will-change-transform overflow-hidden"
+            className="absolute -top-12 bottom-0 left-0 w-full md:w-8/12 pointer-events-none z-0 select-none flex items-start justify-start will-change-transform overflow-hidden"
           >
             <AsciiPortraitCanvas
-              src="/arlan-face.jpg"
-              charSize={5.5}
-              contrast={1.48}
-              brightness={0.04}
-              radius={120}
+              src="/arlan-face-dark.jpg"
+              charSize={5}
+              contrast={1.95}
+              brightness={0.34}
+              radius={150}
               force={24}
-              opacity={0.65}
+              charsetKey="kaspar"
+              invert={true}
+              maxDimension={706}
+              opacity={0.85}
               showHud={true}
               hudPosition="bottom-left"
               align="left"

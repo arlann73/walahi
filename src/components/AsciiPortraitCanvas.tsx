@@ -1,6 +1,11 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useSyncExternalStore } from "react";
+
+const emptySubscribe = () => () => {};
+function useMounted() {
+  return useSyncExternalStore(emptySubscribe, () => true, () => false);
+}
 
 interface AsciiPortraitCanvasProps {
   src?: string;
@@ -16,6 +21,7 @@ interface AsciiPortraitCanvasProps {
   hudPosition?: "bottom-left" | "bottom-right" | "top-left";
   align?: "left" | "center";
   maskGradient?: string;
+  maxDimension?: number;
   className?: string;
 }
 
@@ -41,30 +47,35 @@ interface SamplePoint {
 }
 
 export default function AsciiPortraitCanvas({
-  src = "/arlan-face.jpg",
-  charSize = 5.5,
-  contrast = 1.48,
-  brightness = 0.04,
-  radius = 125,
+  src = "/arlan-face-dark.jpg",
+  charSize = 5,
+  contrast = 1.95,
+  brightness = 0.34,
+  radius = 150,
   force = 24,
   charsetKey = "kaspar",
-  invert = false,
-  opacity = 0.65,
+  invert = true,
+  opacity = 0.85,
   showHud = true,
   hudPosition = "bottom-left",
   align = "left",
-  maskGradient = "linear-gradient(to bottom, black 80%, transparent 100%)",
+  maskGradient = "linear-gradient(to bottom, black 85%, transparent 100%)",
+  maxDimension = 706,
   className = "",
 }: AsciiPortraitCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const mounted = useMounted();
 
-  // Telemetry state
+  // Telemetry state matching runtime specs
   const [telemetry, setTelemetry] = useState({
     cursorX: 0,
     cursorY: 0,
-    fps: 60,
+    fps: 56,
     samples: 0,
+    totalGlyphs: 19881,
+    matrixCols: 141,
+    matrixRows: 141,
   });
 
   useEffect(() => {
@@ -184,7 +195,13 @@ export default function AsciiPortraitCanvas({
       }
 
       points = newPoints;
-      setTelemetry((prev) => ({ ...prev, samples: points.length }));
+      setTelemetry((prev) => ({
+        ...prev,
+        samples: points.length,
+        totalGlyphs: cols * rows,
+        matrixCols: cols,
+        matrixRows: rows,
+      }));
     }
 
     // Resize handler
@@ -193,18 +210,14 @@ export default function AsciiPortraitCanvas({
       const rect = container.getBoundingClientRect();
       if (rect.width === 0 || rect.height === 0) return;
 
-      const maxW = Math.min(rect.width - 32, 820);
-      const maxH = Math.min(rect.height, 780);
+      const maxW = Math.min(Math.floor(rect.width), maxDimension);
+      const maxH = Math.min(Math.max(400, Math.floor(rect.height)), maxDimension);
 
-      let targetW = Math.floor(Math.min(maxW, maxH * 0.95));
-      let targetH = Math.floor(targetW / 0.95);
-      if (targetH > maxH) {
-        targetH = maxH;
-        targetW = Math.floor(targetH * 0.95);
-      }
+      const targetW = Math.min(maxW, maxH);
+      const targetH = targetW;
 
       const finalW = Math.max(280, targetW);
-      const finalH = Math.max(340, targetH);
+      const finalH = Math.max(280, targetH);
 
       if (canvas.width !== finalW || canvas.height !== finalH) {
         canvas.width = finalW;
@@ -337,12 +350,13 @@ export default function AsciiPortraitCanvas({
 
       if (now - lastHudUpdate > 250) {
         lastHudUpdate = now;
-        setTelemetry({
+        setTelemetry((prev) => ({
+          ...prev,
           cursorX: hasMouse ? Math.max(0, Math.round(smoothMouseX)) : 0,
           cursorY: hasMouse ? Math.max(0, Math.round(smoothMouseY)) : 0,
-          fps: isNaN(fps) ? 60 : Math.min(120, fps),
+          fps: isNaN(fps) ? 56 : Math.min(120, fps),
           samples: points.length,
-        });
+        }));
       }
 
       animId = requestAnimationFrame(render);
@@ -358,7 +372,7 @@ export default function AsciiPortraitCanvas({
       window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("touchend", handleMouseLeave);
     };
-  }, [src, charSize, contrast, brightness, radius, force, charsetKey, invert]);
+  }, [src, charSize, contrast, brightness, radius, force, charsetKey, invert, maxDimension]);
 
   return (
     <div
@@ -381,8 +395,9 @@ export default function AsciiPortraitCanvas({
       />
 
       {/* Floating Telemetry HUD */}
-      {showHud && (
+      {showHud && mounted && (
         <div
+          suppressHydrationWarning
           aria-hidden="true"
           className={`absolute z-10 font-mono text-[9px] sm:text-[10px] tracking-tight text-white/50 space-y-0.5 bg-[#121214]/90 p-2 sm:p-2.5 backdrop-blur-md border border-white/10 select-none pointer-events-none ${
             hudPosition === "bottom-right"
@@ -397,8 +412,9 @@ export default function AsciiPortraitCanvas({
             <span>OPTICAL ASCII MATRIX</span>
           </div>
           <div>CURSOR: [{telemetry.cursorX.toString().padStart(3, "0")}, {telemetry.cursorY.toString().padStart(3, "0")}]</div>
-          <div>FRAME_RATE: {telemetry.fps} FPS</div>
-          <div>SAMPLES: {telemetry.samples.toLocaleString()} GLYPHS</div>
+          <div>RENDER: {telemetry.fps} FPS</div>
+          <div>MATRIX: {telemetry.matrixCols || 141} &times; {telemetry.matrixRows || 141} ({(telemetry.totalGlyphs || 19881).toLocaleString()})</div>
+          <div>ACTIVE: {(telemetry.samples || 0).toLocaleString()} GLYPHS</div>
         </div>
       )}
     </div>
