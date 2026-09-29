@@ -5,84 +5,16 @@ import Image from "next/image";
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import AsciiPortraitCanvas from "@/components/AsciiPortraitCanvas";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
-const ASCII_TREE = `                                        +                                       |#
-                                        1                                       i=         ■ about
-                                      %1:           !+                          ::           -:++!1###0
-                                      #1-       :-*!**|1#1                      #1           :--++11!#*##
-                                      %11.      !**+---!!#+--1+                 +*            ++11++#*
-                                      #1*      !#*+--:--++!11-                  **          ***!1##*!  :---**
-                                      #1=     1*:*@1-@#*!#*--1-+1+*%!#1         #*        *##@1@@@!---*!11+*1
-                                      #1+     !*---*#@#1=-:::--+1!#--111+        11       !###-*-+@@@@@@01
-                                      #1-    --*:-:!++**!++#@0*@--+             11!     #11#--+--:!+*---@@@1*!
-                                      %+   ::*#-+!*++*-:*+--+-|!*:             11#     ###1--*+++|11+--#*+++
-                                     !:-  !#-*:-:--!-!-++*!++!#0@#*--:::1*+::  *#++###0!1+!*:-*#!*1+-111*1#
-                                         --*-!-!-++!###|1!1*--:!#1--:+111!+    11*!*!*1!#11111*+--::--+:*#
-                                         %+-*!*!#--*###!+@0---!#|#++1+1**      1       11!    =*!#%1!#*++%#1@01*!-+!:
-                                            --++!#*1**!-!111*1!#@0:!|*#|1+--:1!      :1!       111  *11!#@1%*!++1!1*+*-b*+++
-                                            1!*!1-*:--1:++!1*!#+*@#|###%!#*1--111-   ++!    +*1  -***11+!11!1+---.##+##
-                                            :--**111!1--*@1*++|*#@#!+1111+--11*1++   #1*    11* 1*!*-*#+@1 #----*!1
-                                            =--%%#*@1+*1  1--!*+--+#@1111+-!1*++    :1   +1*   1*!+-**
-                                            *:*+!---*-    !-+!1**+ !%-@@-::-*!+-###   1++       1+-=+@
-                                                           --!*:-:+!*!++-!-**!#*!*1!1!+--        *1
-                                                            !*+--+*1!-!#@#11*++11*+---1!+      1*!
-              %@*+#*!1!1#*1-- 1--*--     :++*:-             !*++-!-*-+1!#*!+*!1!*1!+---1!*+1*- !+
-             @--##--:!11!+!#00@         @##1-               !#@+!*++-1**!+-1-!-!-+*!#@#!1*--+1+:
-            --+++#*!+1#*---:*11!#*+..  *11!#*+--            !1*---!-*-++!#*@0@#*!#@0#11*--+!*
-          +!++!+@00@:!#1111++   11!#11 @*=-                 !#--!+!#@0#@0#!-!-+!*11*--:1*
-          +!+###@*#1!**!#1#!    +#*+!++!*1--11%#1*!-        #+*--!1111*-!-+!*11#@0@#!-!*
-          +!-#000000#01--***%#+-- 111**#**!11!%@@@@1+:-     %#*!*+1!1--!-+!*11*--:1*
-        01##%@0++11!#*+!-1%#---11%#%**:-:::=  @%1+--       %#*!+-!#*!1--!-+!*11*--:1*
-        +**##%-  -!-*-*#11!#@0%--+!+::             011=-    @1+*--!#*!1--!-+!*11*--:1*
-        +%-!#*-:::-----!-:!*#000@                  01---    @1+*--!#*!1--!-+!*11*--:1*
-        000%@@0@#0--@@0---***!+1#                  %#*+--   @!*--!#*!1--!-+!*11*--:1*
-         1*1-=*!1##*!@1111!*:-!1--1#+:::--          #*--    @!*--!#*!1--!-+!*11*--:1*
-          --!*!@1%**--*#0001!#0000%@0!#*:-!1---%%### %+-    @!*--!#*!1--!-+!*11*--:1*
-            !%%--!*+*#@1::-!11@00000000%@@0!*        @#1*   @!*--!#*!1--!-+!*11*--:1*
-             # @000!#@00000*++++ 1%#11###            %#*-   @!*--!#*!1--!-+!*11*--:1*
-              #--1*!#0@0@*#+++ 0%+**:-:              #*--   @!*--!#*!1--!-+!*11*--:1*
-                11#+* +* *1-=1@0#11*                  #*++   @!*--!#*!1--!-+!*11*--:1*
-                      !#F =                            01++  @!*--!#*!1--!-+!*11*--:1*
-                                                         #*  @!*--!#*!1--!-+!*11*--:1*
-                                                          #+ @!*--!#*!1--!-+!*11*--:1*
-                                                           %#@!*--!#*!1--!-+!*11*--:1*
-                                                            #*--!#*!1--!-+!*11*--:1*
-                                                             #*--!#*!1--!-+!*11*--:1*
-                                                              #*--!#*!1--!-+!*11*--:1*
-                                                               #*--!#*!1--!-+!*11*--:1*
-                                                                #*--!#*!1--!-+!*11*--:1*
-                                                                 #*--!#*!1--!-+!*11*--:1*
-                                                                  #*--!#*!1--!-+!*11*--:1*
-                                                                   #*--!#*!1--!-+!*11*--:1*
-                                                                    #*--!#*!1--!-+!*11*--:1*
-                                                                     #*--!#*!1--!-+!*11*--:1*
-                                                                      #*--!#*!1--!-+!*11*--:1*
-                                                                       #*--!#*!1--!-+!*11*--:1*
-                                                                        #*--!#*!1--!-+!*11*--:1*
-                                                                         #*--!#*!1--!-+!*11*--:1*
-                                                                          #*--!#*!1--!-+!*11*--:1*
-                                                                           #*--!#*!1--!-+!*11*--:1*
-                                                                            #*--!#*!1--!-+!*11*--:1*
-                                                                             #*--!#*!1--!-+!*11*--:1*
-                                                                              #*--!#*!1--!-+!*11*--:1*
-                                                                               #*--!#*!1--!-+!*11*--:1*
-                                                                                #*--!#*!1--!-+!*11*--:1*
-                                                                                 #*--!#*!1--!-+!*11*--:1*
-                                                                                  #*--!#*!1--!-+!*11*--:1*
-                                                                                   #*--!#*!1--!-+!*11*--:1*
-                                                                                    #*--!#*!1--!-+!*11*--:1*
-                                                                                     #*--!#*!1--!-+!*11*--:1*
-                                                                                      #*--!#*!1--!-+!*11*--:1*
-                                                                                       #*--!#*!1--!-+!*11*--:1*
-                                                                                        #*--!#*!1--!-+!*11*--:1*`;
 
 export default function AboutPortfolioSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const portraitRef = useRef<HTMLDivElement>(null);
-  const asciiRef = useRef<HTMLPreElement>(null);
-  const [avatarSrc, setAvatarSrc] = useState("/avatar.jpg");
+  const asciiRef = useRef<HTMLDivElement>(null);
+  const [avatarSrc, setAvatarSrc] = useState("/arlan-face.jpg");
 
   // GSAP Hover on portrait thumbnail
   const handlePortraitEnter = () => {
@@ -173,14 +105,22 @@ export default function AboutPortfolioSection() {
       <div aria-hidden="true" className="absolute top-0 bottom-0 left-[74.5%] w-[1px] bg-white/[0.07] pointer-events-none z-[1]" />
       <div aria-hidden="true" className="absolute top-0 bottom-0 right-[2%] w-[1px] bg-white/[0.07] pointer-events-none z-[1]" />
 
-      {/* ── Pale Architectural ASCII Tree Backdrop Overlay ── */}
-      <div aria-hidden="true" className="absolute inset-0 overflow-hidden pointer-events-none z-[2] select-none opacity-85">
-        <pre
-          ref={asciiRef}
-          className="ascii-bg absolute top-2 left-[24%] -translate-x-[15%] select-none font-mono text-[7px] sm:text-[8px] md:text-[8.5px] leading-[7.5px] sm:leading-[8px] md:leading-[8.5px] text-white/20 whitespace-pre will-change-transform"
-        >
-          {ASCII_TREE}
-        </pre>
+      {/* ── Interactive Realtime Optical ASCII Portrait Shader Backdrop (Positioned behind editorial headline) ── */}
+      <div
+        ref={asciiRef}
+        aria-hidden="true"
+        className="absolute top-8 md:top-12 left-0 right-0 h-[640px] md:h-[720px] lg:h-[760px] overflow-hidden pointer-events-none z-[2] select-none flex items-center justify-center will-change-transform"
+      >
+        <AsciiPortraitCanvas
+          src="/arlan-face.jpg"
+          charSize={5.5}
+          contrast={1.48}
+          brightness={0.04}
+          radius={125}
+          force={24}
+          opacity={0.65}
+          showHud={true}
+        />
       </div>
 
       {/* ── Section Header: Identity, Column Tabs & Portrait Thumbnail ── */}
