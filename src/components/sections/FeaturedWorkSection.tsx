@@ -341,15 +341,15 @@ export default function FeaturedWorkSection() {
           </div>
 
           {/* Main Statement Heading Container */}
-          <div className="w-full max-w-[1240px]">
+          <div className="w-full max-w-[1040px]">
             <h2
               ref={headlineRef}
               aria-label="From subsurface data interpretation to field exploration, I turn geological complexity into actionable insights. Here’s a taste of the work I’ve loved doing and the real-world projects I’ve helped bring to life."
-              className="font-display font-medium text-white text-left"
+              className="text-white text-left"
             >
               {/* DESKTOP PRESENTATION (lg and up): 5 Intentional Lines across 2 Blocks */}
               <div
-                className="hidden lg:block text-h1 font-medium"
+                className="hidden lg:block text-h2"
                 aria-hidden="true"
               >
                 {/* Block 1: Positioning Statement (3 lines) */}
@@ -380,7 +380,7 @@ export default function FeaturedWorkSection() {
 
               {/* MOBILE / TABLET PRESENTATION (< lg): Natural Fluid Semantic Wrapping */}
               <div
-                className="block lg:hidden text-h1 font-medium"
+                className="block lg:hidden text-h2"
                 aria-hidden="true"
               >
                 {/* Block 1: Positioning */}

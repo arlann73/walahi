@@ -82,6 +82,11 @@ Colors must be implemented via semantic CSS variables:
 - **Display Descender Protection**: `padding-bottom: 0.08em` pada `.text-display` (leading ketat 0.96) dan `0.04em` pada `.text-display-sm` (leading 1.05 yang lebih longgar sudah cukup melindungi descender).
 - **Trailing Tracking Compensation**: `.text-mono-center` (`margin-right: -0.14em`) on center-aligned wide tracking labels
 
+### Section Statement Typographic Architecture
+- **About Me Manifesto (`AboutPortfolioSection.tsx`)**: `.text-h2` (`26px` $\rightarrow$ `40px`), weight `600` canonical token, container `max-w-[1040px]` (~50ch, col-start-4 col-span-9), `<p>`.
+- **Featured Work Positioning (`FeaturedWorkSection.tsx`)**: `.text-h2` (`26px` $\rightarrow$ `40px`), weight `600` canonical token, container `max-w-[1040px]` (~50ch), `<h2>` with inner lines for GSAP reveal.
+- **What I Do (`WhatIDoSection.tsx`)**: Header title `.text-h1` (`34px` $\rightarrow$ `56px`, standard weight, no `font-black`), mission statement `.text-h3` (`20px` $\rightarrow$ `28px`, continuous fluid, no `sm:text-h2` jump), maintaining 2:1 harmonic octave ratio (56px : 28px).
+
 ### Pengecualian yang Disengaja (Intentional Exceptions)
 1. **Pitchdeck Widget & Interactive Deck (`src/components/deck/`)**: Sidebar tetap `w-[230px]` dan slide ber-rasio tetap yang diskalakan via GSAP. Dilarang memakai fluid `vw` karena teks akan meluber saat viewport melebar; wajib menggunakan ukuran statis (`rem`/`px`) atau container queries.
 2. **ASCII Grid Preloader & Background Canvas Art (7–8.5px)**: Karakter monospace dekoratif terminal (`aria-hidden="true"`). Wajib statis agar susunan sel matriks kolom/baris karakter tetap presisi.

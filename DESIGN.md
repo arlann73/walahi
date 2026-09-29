@@ -119,6 +119,26 @@ Calculated along an interpolation slope from **375px (Mobile Min)** to **1440px 
 4. **Display Descender Protection**: `.text-display` menyertakan `padding-bottom: 0.08em` (leading ketat `0.96`), sedangkan `.text-display-sm` sengaja memakai `padding-bottom: 0.04em` karena leading-nya lebih longgar (`1.05`), sehingga ruang batas bawah descender (`y`, `p`, `g`) sudah terlindungi tanpa menciptakan ruang kosong berlebih.
 5. **Trailing Tracking Compensation**: Center-aligned Geist Mono labels with wide tracking (`+0.14em`) must use `.text-mono-center` (`margin-right: -0.14em`) to compensate for the trailing space and ensure optical symmetry.
 
+### Section Statement Typographic Architecture & Reading Measure
+Untuk mempertahankan konsistensi hirarki editorial lintas section (Cross-Section Hierarchy) tanpa persaingan visual (typographic collision):
+
+1. **About Me — Editorial Manifesto Statement (`AboutPortfolioSection.tsx`)**:
+   - **Token**: `.text-h2` (`26px` $\rightarrow$ `40px`, leading `1.15`, tracking `-0.02em`).
+   - **Weight**: Native canonical token weight (`600`), tanpa override `font-normal`.
+   - **Measure / Width**: `max-w-[1040px]` (~50–55ch), col-start-4 col-span-9 pada 12-column grid.
+   - **Semantics**: Tag `<p>` naratif editorial dengan prefix tag `[about]`.
+
+2. **Featured Work — Positioning & Transition Statement (`FeaturedWorkSection.tsx`)**:
+   - **Token**: `.text-h2` (`26px` $\rightarrow$ `40px`, leading `1.15`, tracking `-0.02em`). Diturunkan dari legacy H1 agar proporsional secara vertikal terhadap grid kartu proyek.
+   - **Weight**: Native canonical token weight (`600`), tanpa override ad-hoc.
+   - **Measure / Width**: `max-w-[1040px]` (~50ch) untuk densitas per baris yang ideal (38–54 karakter per baris), selaras dengan About Me manifesto.
+   - **Semantics**: Tag `<h2>` section heading dengan inner line containers (`desktop-line-1`, `desktop-line-2`) untuk koreografi GSAP reveal.
+
+3. **What I Do — Section Header & Core Mission Statement (`WhatIDoSection.tsx`)**:
+   - **Header Title**: `.text-h1` (`34px` $\rightarrow$ `56px`), standard token weight (menghapus `font-black` untuk estetika monokromatik Swiss modernist yang tenang).
+   - **Mission Statement**: `.text-h3` (`20px` $\rightarrow$ `28px`, leading `1.22`, tracking `-0.015em`). Menghapus responsive jump `sm:text-h2` dan custom `tracking-tight` guna menjaga rasio harmonik oktaf 2:1 terhadap judul H1 section (56px : 28px).
+   - **Semantics**: `<h2>` untuk header judul, `<p>` untuk paragraf misi.
+
 ### Pengecualian yang Disengaja (Intentional Exceptions)
 Area-area berikut secara eksplisit dikecualikan dari skala fluid viewport (`vw`):
 1. **Pitchdeck Widget & Interactive Deck (`src/components/deck/`)**:

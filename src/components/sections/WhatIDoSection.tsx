@@ -139,7 +139,7 @@ export default function WhatIDoSection() {
         {/* Header */}
         <header className="w-full flex justify-between items-start z-30 relative mb-8 md:mb-10 what-ido-fade will-change-[transform,opacity]">
           <div>
-            <h2 className="text-h1 font-black text-white select-none">
+            <h2 className="text-h1 text-white select-none">
               WHAT I DO.
             </h2>
           </div>
@@ -172,7 +172,7 @@ export default function WhatIDoSection() {
 
         {/* Agency Mission Statement Paragraph */}
         <div className="max-w-4xl what-ido-fade will-change-[transform,opacity]">
-          <p className="text-h3 sm:text-h2 text-gray-100 font-normal tracking-tight">
+          <p className="text-h3 text-gray-100">
             I bridge the gap between earth sciences and digital innovation. With a deep interest in data analysis and AI-driven workflows, I actively explore tech-assisted solutions to solve complex problems. By combining a strong scientific approach with a modern digital mindset, I bring fresh perspectives, high adaptability, and an eagerness to learn to every project I take on.
           </p>
         </div>
