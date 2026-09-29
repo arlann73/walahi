@@ -1,16 +1,18 @@
 import type { Metadata } from "next";
+import localFont from "next/font/local";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
-import {
-  GeistPixelSquare,
-  GeistPixelGrid,
-  GeistPixelCircle,
-  GeistPixelTriangle,
-  GeistPixelLine,
-} from "geist/font/pixel";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import FilmGrain from "@/components/FilmGrain";
+
+const geistPixelGrid = localFont({
+  src: "../fonts/GeistPixel-Grid.woff2",
+  weight: "500",
+  display: "swap",
+  variable: "--font-geist-pixel-grid",
+  preload: false,
+});
 
 export const metadata: Metadata = {
   title: "ARLAN | Digital Designer & Creative Developer",
@@ -26,8 +28,11 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${GeistSans.variable} ${GeistMono.variable} ${GeistPixelSquare.variable} ${GeistPixelGrid.variable} ${GeistPixelCircle.variable} ${GeistPixelTriangle.variable} ${GeistPixelLine.variable} h-full antialiased no-scrollbar font-sans`}
+      className={`${GeistSans.variable} ${GeistMono.variable} ${geistPixelGrid.variable} h-full antialiased no-scrollbar font-sans`}
     >
+      <head>
+        <link rel="preload" href="/model.glb" as="fetch" crossOrigin="anonymous" />
+      </head>
       <body
         suppressHydrationWarning
         className="min-h-full flex flex-col bg-background text-foreground overflow-x-hidden selection:bg-primary selection:text-highlight no-scrollbar font-sans"

@@ -1,9 +1,15 @@
 "use client";
 
 import { useEffect, useState, useRef, useCallback } from "react";
+import dynamic from "next/dynamic";
 import { FIELD_LOG_DATA } from "@/data/fieldLogData";
 import { Layers, Compass, Pickaxe, User, type LucideIcon } from "lucide-react";
 import { gsap } from "gsap";
+
+const FieldLogCanvas3D = dynamic(() => import("./FieldLogCanvas3D"), {
+  ssr: false,
+  loading: () => null,
+});
 
 interface FieldLogModalProps {
   isOpen: boolean;
@@ -91,7 +97,7 @@ export default function FieldLogModal({
         {/* Title: Chauncey \ DEV / McAskill */}
         <h1
           id="field-log-title"
-          className="font-editorial italic font-normal text-3xl sm:text-5xl md:text-6xl lg:text-[76px] tracking-tight leading-none text-chalk flex items-center flex-wrap gap-y-2"
+          className="text-display-sm text-chalk flex items-center flex-wrap gap-y-2"
         >
           <span>{activeItem.titlePart1}</span>
 
@@ -104,7 +110,7 @@ export default function FieldLogModal({
             >
               <polygon points="8,2 46,2 53,26 1,26" />
             </svg>
-            <span className="absolute inset-0 flex items-center justify-center font-mono text-[9px] sm:text-[11px] md:text-[12px] tracking-[0.2em] font-semibold text-chalk uppercase">
+            <span className="absolute inset-0 flex items-center justify-center font-mono text-mono-label tracking-mono-bracket text-mono-center font-semibold text-chalk uppercase">
               {activeItem.badge}
             </span>
           </span>
@@ -117,7 +123,7 @@ export default function FieldLogModal({
           onClick={onClose}
           onMouseEnter={(e) => gsap.to(e.currentTarget, { opacity: 1, duration: 0.2, ease: "power1.out" })}
           onMouseLeave={(e) => gsap.to(e.currentTarget, { opacity: 0.85, duration: 0.2, ease: "power1.out" })}
-          className="font-editorial italic text-lg sm:text-xl md:text-2xl text-chalk/90 cursor-pointer pt-1"
+          className="font-sans text-lg sm:text-xl md:text-2xl text-chalk/90 cursor-pointer pt-1"
           aria-label="Close details"
         >
           Close
@@ -125,17 +131,23 @@ export default function FieldLogModal({
       </div>
 
       {/* ============================================================ */}
-      {/* 2. CENTER STAGE: RESERVED 3D KARAKTER VIEWPORT (CLEAN VOID)  */}
+      {/* 2. CENTER STAGE: 3D ARTEFACT VIEWPORT (EXCLUSIVELY FOR ARLAN)*/}
       {/* ============================================================ */}
-      <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center">
-        {/* Clean void reserved for 3D character */}
-      </div>
+      {activeItem.id === "arlan" ? (
+        <div className="absolute inset-0 z-10 pointer-events-auto">
+          <FieldLogCanvas3D />
+        </div>
+      ) : (
+        <div className="absolute inset-0 z-0 pointer-events-none flex items-center justify-center">
+          {/* Clean void for technical documentation */}
+        </div>
+      )}
 
       {/* ============================================================ */}
       {/* 3. RIGHT SIDE: SIMPLIFIED 4-WORK ROSTER (LOCOMOTIVE STYLE)   */}
       {/* ============================================================ */}
       <div className="absolute top-28 sm:top-36 right-6 sm:right-10 md:right-16 z-20 flex flex-col gap-2.5 sm:gap-3 pointer-events-auto">
-        <span className="font-mono text-[9px] tracking-[0.2em] text-muted/50 uppercase mb-1">
+        <span className="font-pixel-grid text-mono-label tracking-mono-bracket text-muted/50 uppercase mb-1">
           [ 04 WORKS ]
         </span>
         {FIELD_LOG_DATA.map((item) => {
@@ -151,7 +163,7 @@ export default function FieldLogModal({
                 if (!isSelected) gsap.to(e.currentTarget, { color: "#908C87", duration: 0.2, ease: "power1.out" });
               }}
               style={{ color: isSelected ? "#E2E2DD" : "#908C87" }}
-              className="font-sans text-sm sm:text-base md:text-[17px] leading-[1.6] text-left cursor-pointer flex items-center gap-2 whitespace-nowrap"
+              className="text-body-2 sm:text-body-1 leading-[1.6] text-left cursor-pointer flex items-center gap-2 whitespace-nowrap"
             >
               {isSelected ? (
                 <span className="text-chalk font-bold select-none text-base">→</span>
@@ -230,7 +242,7 @@ export default function FieldLogModal({
             <>
               {activeItem.organizations && activeItem.organizations.length > 0 && (
                 <div>
-                  <span className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted block mb-1.5">
+                  <span className="font-mono text-mono-label tracking-mono-bracket uppercase text-muted block mb-1.5">
                     ORGANIZATIONS & ASSISTANTSHIPS
                   </span>
                   <ul className="space-y-1 text-xs sm:text-[12.5px] text-chalk/85 font-sans leading-relaxed">
@@ -246,7 +258,7 @@ export default function FieldLogModal({
 
               {activeItem.majorEvents && activeItem.majorEvents.length > 0 && (
                 <div>
-                  <span className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted block mb-1.5">
+                  <span className="font-mono text-mono-label tracking-mono-bracket uppercase text-muted block mb-1.5">
                     MAJOR EVENTS & FIELD MAPPING
                   </span>
                   <ul className="space-y-1 text-xs sm:text-[12.5px] text-chalk/85 font-sans leading-relaxed">
@@ -265,7 +277,7 @@ export default function FieldLogModal({
           {/* Case B: Compact Responsibilities / Scope for Research, Work Practice, & Arlan */}
           {activeItem.responsibilities && activeItem.responsibilities.length > 0 && (
             <div>
-              <span className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted block mb-1.5">
+              <span className="font-mono text-mono-label tracking-mono-bracket uppercase text-muted block mb-1.5">
                 {activeItem.scopeTitle || "KEY RESPONSIBILITIES"}
               </span>
               <ul className="space-y-1.5 text-xs sm:text-[12.5px] text-chalk/85 font-sans leading-relaxed">

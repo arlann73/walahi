@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@700;800&display=swap');
 @import "tailwindcss";
 
 /* ─────────────────────────────────────────────────────────────
@@ -134,43 +133,199 @@
   --radius-card:               var(--radius-card);
   --radius-card-lg:            var(--radius-card-lg);
 
-  /* Font Families */
+  /* Font Families: Pure Geist System */
   --font-sans:                 var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono:                 var(--font-geist-mono), ui-monospace, monospace;
   --font-display:              var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-serif:                'Newsreader', 'Cormorant Garamond', Georgia, serif;
-  --font-editorial:            'Newsreader', 'Cormorant Garamond', Georgia, serif;
-  --font-jakarta:              'Plus Jakarta Sans', var(--font-geist-sans), sans-serif;
+  --font-serif:                var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-editorial:            var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-jakarta:              var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
 
-  --font-pixel-square:         var(--font-geist-pixel-square), var(--font-geist-mono), monospace;
   --font-pixel-grid:           var(--font-geist-pixel-grid), var(--font-geist-mono), monospace;
-  --font-pixel-circle:         var(--font-geist-pixel-circle), var(--font-geist-mono), monospace;
-  --font-pixel-triangle:       var(--font-geist-pixel-triangle), var(--font-geist-mono), monospace;
-  --font-pixel-line:           var(--font-geist-pixel-line), var(--font-geist-mono), monospace;
 }
 
-/* ── Geist Pixel Explicit Utility Classes ── */
-.font-pixel-square {
-  font-family: var(--font-geist-pixel-square), var(--font-geist-mono), monospace;
+/* ─────────────────────────────────────────────────────────────
+   CANONICAL DESIGN SYSTEM TYPOGRAPHY (v6.1 HIGH-END FLUID SPEC)
+   Base: 1 rem = 16px (Browser root default)
+   Fluid Range: 375px (Mobile Min) to 1440px (Desktop Max)
+   ───────────────────────────────────────────────────────────── */
+
+/* Global Legibility & Anti-Orphan Engine (Headings only for optimizeLegibility) */
+h1, h2, h3, h4, .text-display, .text-display-sm, .text-h1, .text-h2, .text-h3 {
+  text-wrap: balance;
+  text-rendering: optimizeLegibility;
 }
+
+p, .text-body-editorial, .text-body-1, .text-body-2 {
+  text-wrap: pretty;
+}
+
+/* ── DISPLAY: 52px (320px/375px) to 120px (1440px) | Leading 0.96 | Tracking -0.04em ── */
+@utility text-display-sm {
+  font-family: var(--font-sans);
+  font-size: clamp(2.125rem, 1.2rem + 3.94vw, 4.75rem);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+  padding-bottom: 0.04em;
+}
+
+@utility text-display {
+  font-family: var(--font-sans);
+  font-size: clamp(3.25rem, 1.8rem + 6.3vw, 7.5rem);
+  line-height: 0.96;
+  letter-spacing: -0.04em;
+  font-weight: 800;
+  padding-bottom: 0.08em; /* Safe descender margin (protects y, p, g) for line-reveal animation */
+}
+
+/* ── HEADING 1: 34px to 56px | Leading 1.08 | Tracking -0.03em ── */
+@utility text-h1 {
+  font-family: var(--font-sans);
+  font-size: clamp(2.125rem, 1.63rem + 2.1vw, 3.5rem);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+}
+
+/* ── HEADING 2: 26px to 40px | Leading 1.15 | Tracking -0.02em ── */
+@utility text-h2 {
+  font-family: var(--font-sans);
+  font-size: clamp(1.625rem, 1.32rem + 1.3vw, 2.5rem);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+}
+
+/* ── HEADING 3: 20px to 28px | Leading 1.22 | Tracking -0.015em ── */
+@utility text-h3 {
+  font-family: var(--font-sans);
+  font-size: clamp(1.25rem, 1.07rem + 0.75vw, 1.75rem);
+  line-height: 1.22;
+  letter-spacing: -0.015em;
+  font-weight: 600;
+}
+
+/* ── SUBTITLE 1: 16px to 20px | Leading 1.4 | Tracking -0.01em ── */
+@utility text-subtitle-1 {
+  font-family: var(--font-sans);
+  font-size: clamp(1.0rem, 0.91rem + 0.38vw, 1.25rem);
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  font-weight: 500;
+}
+
+/* ── SUBTITLE 2: 14px to 16px | Leading 1.45 | Tracking 0em ── */
+@utility text-subtitle-2 {
+  font-family: var(--font-sans);
+  font-size: clamp(0.875rem, 0.83rem + 0.19vw, 1.0rem);
+  line-height: 1.45;
+  letter-spacing: 0em;
+  font-weight: 500;
+}
+
+/* ── BODY EDITORIAL: 16px to 18px | Leading 1.6 | Tracking -0.005em (Pure Typographic Token) ── */
+@utility text-body-editorial {
+  font-family: var(--font-sans);
+  font-size: clamp(1.0rem, 0.96rem + 0.19vw, 1.125rem);
+  line-height: 1.6;
+  letter-spacing: -0.005em;
+  font-weight: 400;
+}
+
+/* ── BODY 1: 15px to 16px | Leading 1.5 | Tracking 0em ── */
+@utility text-body-1 {
+  font-family: var(--font-sans);
+  font-size: clamp(0.9375rem, 0.92rem + 0.09vw, 1.0rem);
+  line-height: 1.5;
+  letter-spacing: 0em;
+  font-weight: 400;
+}
+@utility text-body-1-semibold {
+  font-family: var(--font-sans);
+  font-size: clamp(0.9375rem, 0.92rem + 0.09vw, 1.0rem);
+  line-height: 1.5;
+  letter-spacing: 0em;
+  font-weight: 600;
+}
+
+/* ── BODY 2: 13px to 14px | Leading 1.48 | Tracking +0.005em ── */
+@utility text-body-2 {
+  font-family: var(--font-sans);
+  font-size: clamp(0.8125rem, 0.79rem + 0.09vw, 0.875rem);
+  line-height: 1.48;
+  letter-spacing: 0.005em;
+  font-weight: 400;
+}
+@utility text-body-2-semibold {
+  font-family: var(--font-sans);
+  font-size: clamp(0.8125rem, 0.79rem + 0.09vw, 0.875rem);
+  line-height: 1.48;
+  letter-spacing: 0.005em;
+  font-weight: 600;
+}
+
+/* ── GEIST MONO SCALE (Strict rem units for full 200% zoom scaling) ── */
+@utility text-mono-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem; /* 12px base */
+  line-height: 1.0rem; /* 16px */
+  text-transform: uppercase;
+  letter-spacing: 0.14em; /* Canonical short bracket tracking */
+  font-weight: 500;
+}
+@utility text-mono-caption {
+  font-family: var(--font-mono);
+  font-size: 0.75rem; /* 12px base */
+  line-height: 1.0rem; /* 16px */
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+  font-weight: 400;
+}
+@utility text-mono-data {
+  font-family: var(--font-mono);
+  font-size: clamp(0.8125rem, 0.79rem + 0.09vw, 0.875rem); /* 13–14px */
+  line-height: 1.45;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+
+/* ── Tracking Modifiers for Mono Micro-Typography ── */
+@utility tracking-mono-bracket {
+  letter-spacing: 0.14em; /* For short bracket tags like [ FEATURED WORK ] */
+}
+@utility tracking-mono-meta {
+  letter-spacing: 0.08em; /* For longer metadata copy */
+}
+@utility tracking-mono-data {
+  letter-spacing: 0.02em; /* For numeric tables & logs */
+}
+
+/* Center alignment compensation for wide tracking (+0.14em trailing offset) */
+@utility text-mono-center {
+  text-align: center;
+  margin-right: -0.14em;
+}
+
+/* ── Layout Measure Utility (Separated from typography token) ── */
+@utility measure-editorial {
+  max-width: 65ch;
+}
+
+/* ── Geist Pixel Explicit Utility Classes (Grid Accent Only) ── */
 .font-pixel-grid {
   font-family: var(--font-geist-pixel-grid), var(--font-geist-mono), monospace;
 }
-.font-pixel-circle {
-  font-family: var(--font-geist-pixel-circle), var(--font-geist-mono), monospace;
-}
-.font-pixel-triangle {
-  font-family: var(--font-geist-pixel-triangle), var(--font-geist-mono), monospace;
-}
-.font-pixel-line {
-  font-family: var(--font-geist-pixel-line), var(--font-geist-mono), monospace;
-}
 
-/* ── Editorial Luxury Serif (Newsreader / Cormorant) ── */
-.font-editorial {
-  font-family: 'Newsreader', 'Cormorant Garamond', Georgia, serif;
-  font-feature-settings: "liga" 1, "dlig" 1, "kern" 1;
-  font-optical-sizing: auto;
+@utility text-pixel-label {
+  font-family: var(--font-geist-pixel-grid), var(--font-geist-mono), monospace;
+  font-size: 0.75rem; /* 12px: Batas lantai internal sistem desain (ketajaman perlu diverifikasi visual pada display 1x & 2x) */
+  line-height: 1.0rem; /* 16px */
+  font-weight: 500; /* Native weight GeistPixelGrid */
+  font-synthesis-weight: none; /* Mencegah browser mensintesis faux bold secara struktural */
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
 /* ── Base ── */

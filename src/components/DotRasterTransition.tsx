@@ -98,7 +98,7 @@ export default function DotRasterTransition({
       // Instantly wake and redraw upon reverse scroll (< waveEndP) without stale frames or flash.
       if (smoothP >= waveEndP) {
         if (!wasSleeping) {
-          ctx.fillStyle = "#D8382B";
+          ctx.fillStyle = "#121214";
           ctx.fillRect(0, 0, width, height);
           wasSleeping = true;
         }
@@ -178,8 +178,8 @@ export default function DotRasterTransition({
           }
         }
 
-        // ④ Render: Single batch draw for solid red (#D8382B)
-        ctx.fillStyle = "#D8382B";
+        // ④ Render: Single batch draw for solid dark (#121214)
+        ctx.fillStyle = "#121214";
 
         if (solidCols.length > 0) {
           for (let i = 0; i < solidCols.length; i += 4) {

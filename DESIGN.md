@@ -58,43 +58,81 @@ Colors must be implemented strictly via semantic CSS variables rather than hardc
 
 ## 3. TYPOGRAPHY SYSTEM
 
-### Font Families & Provenance
+### Core Principles & Provenance
+The typography system is unified on **Geist** (designed by Vercel in collaboration with Basement Studio for high-density modern digital interfaces). External Google Fonts have been purged for maximal performance and visual consistency.
 
-To prevent AI from generating non-existent fonts or incorrect CSS imports, every font family has a strict source:
+- **Primary UI Typeface (`--font-sans`)**: `Geist Sans`
+  - *Source*: Native `geist/font/sans` variable font in `src/app/layout.tsx`. Supports continuous weights 100–900.
+  - *Usage*: All headlines, titles, subtitles, navigation, and body reading copy.
+  - *Temporary Alias Notice*: `--font-display` is currently a **temporary backwards-compatibility alias** pointing to `var(--font-geist-sans)`. All TSX references will be replaced with canonical typography tokens during the 50-line rollout, after which `--font-display` will be permanently purged from `globals.css` to prevent design drift and confusion with the CSS property `font-display: swap`.
+- **Secondary / Data Typeface (`--font-mono`)**: `Geist Mono`
+  - *Source*: Native `geist/font/mono` variable font in `src/app/layout.tsx`. Supports continuous weights 100–900.
+  - *Usage*: Technical metadata, well-log numbers, coordinates, timestamps, ASCII art, and tabular data tables.
+- **Pixel Grid Accent (`--font-pixel-grid`)**: `Geist Pixel Grid`
+  - *Source*: Direct local font loading via `next/font/local` in `src/app/layout.tsx` pointing to `src/fonts/GeistPixel-Grid.woff2` (accompanied by `src/fonts/LICENSE.txt`, SIL OFL 1.1). Single static weight: `500` (Medium).
+  - *Optimization & Preload Rationale*: Loaded locally with `preload: false` to eliminate critical-path network contention on initial viewport paint. Bypasses the `geist/font/pixel` package barrel file, permanently eliminating 4 unused font preload tags and 101.1 KB of dead font payload (`Square`, `Circle`, `Triangle`, `Line`).
+  - *Usage*: Section marker brackets (e.g. `[ 01 // ABOUT ME ]`) and technical table headers.
 
-- **Display & Sans (`--font-sans`, `--font-display`)**: `Geist Sans`
-  - *Source*: Imported via `geist/font/sans` in `src/app/layout.tsx`. Variable: `--font-geist-sans`.
-  - *Usage*: Hero display headlines, navigation items, general reading text.
-- **Mono (`--font-mono`)**: `Geist Mono`
-  - *Source*: Imported via `geist/font/mono` in `src/app/layout.tsx`. Variable: `--font-geist-mono`.
-  - *Usage*: Metadata tags, coordinates, studio clock, counters, button text.
-- **Editorial Serif (`--font-editorial`, `--font-serif`)**: `Newsreader`
-  - *Source*: Google Fonts `@import` in `src/app/globals.css`.
-  - *Usage*: Italic narrative quotes, human reflection statements. Never used for UI chrome or labels.
-- **Pixel Grid (`--font-pixel-grid`)**: `Geist Pixel Grid`
-  - *Source*: Official font variant exported from the `geist` npm package via `import { GeistPixelGrid } from "geist/font/pixel"` in `src/app/layout.tsx`. Injected as CSS variable `--font-geist-pixel-grid` and available via Tailwind class `.font-pixel-grid`.
-  - *Usage*: Section indicator markers (e.g. `[ 01 // ABOUT ME ]`), technical coordinate ticks.
-- **Technical Grotesk (`--font-jakarta`)**: `Plus Jakarta Sans`
-  - *Source*: Google Fonts `@import` in `src/app/globals.css`.
-  - *Usage*: Timeline table rows, CTA button labels (`LET'S TALK`).
+### Base Unit & Accessibility Calibration
+$$\mathbf{1\text{ rem} = 16\text{px}}\quad\text{(Default Browser User-Agent Base)}$$
+*Accessibility Clarification*: WCAG 1.4.4 does not mandate a specific pixel value; it requires text to scale smoothly up to 200% without loss of content or functionality. All font sizes and line heights are authored in `rem` (and fluid `clamp()`) to dynamically respect the user's root browser font size settings.
 
-### Semantic Typography Scale
+### Fluid Typography Scale `[Font Size] / [Line Height]`
+Calculated along an interpolation slope from **375px (Mobile Min)** to **1440px (Desktop Max)**:
 
-Never use arbitrary ad-hoc font sizes. Use the deterministic scale below:
-
-| Semantic Role | Size | Weight | Line Height | Tracking | Case | Typical Usage |
+| Token Name | Weight | Desktop Max (`1440px`) | Tablet Mid (`≈768px` interpolasi) | Mobile Min (`375px`) | Tracking | Fluid Clamp Formula |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| `--text-display-xl` | `clamp(44px, 6.6vw, 96px)` | `800` | `0.92` | `-0.04em` | UPPERCASE | Hero Giant Headlines (PRASTYO ARLAN) |
-| `--text-display-lg` | `clamp(32px, 4.4vw, 64px)` | `700` | `1.05` | `-0.04em` | UPPERCASE | Major Section Titles (FEATURED WORK) |
-| `--text-h1` | `clamp(44px, 5.5vw, 76px)` | `500` | `1.0` | `-0.035em` | UPPERCASE | Secondary Section Titles (WHAT I DO) |
-| `--text-h2` | `22px` | `500` | `1.08` | `-0.02em` | Normal | Project Card Headings, Large Callouts |
-| `--text-h3` | `18px` | `500` | `1.1` | `-0.01em` | Normal | Sub-section headers |
-| `--text-body-lg` | `16px` | `400` | `24px` | `-0.01em` | Normal | Editorial narrative quotes (`Newsreader` italic) |
-| `--text-body` | `14px` | `400` | `1.5` | `normal` | Normal | General reading paragraphs |
-| `--text-body-sm` | `12px` | `400` | `1.5` | `normal` | Normal | Secondary card descriptions, bio copy |
-| `--text-caption` | `11px` | `600` | `1.0` | `0.16em` | UPPERCASE | Button labels, timeline rows, metadata |
-| `--text-ticker` | `10px` | `700` | `1.0` | `0.22em` | UPPERCASE | 12-column bottom ticker, live clock |
-| `--text-label` | `9px` | `500` | `1.0` | `0.24em` | UPPERCASE | Micro-typography badges, brackets, tags |
+| **Display** | 800 | **120 / 115** (`7.5rem`) | **≈77 / 74** (`~4.81rem`) | **52 / 50** (`3.25rem`) | `-0.04em` | `clamp(3.25rem, 1.8rem + 6.3vw, 7.5rem)` |
+| **Display SM** | 700 | **76 / 80** (`4.75rem`) | **≈50 / 52** (`~3.09rem`) | **34 / 36** (`2.125rem`) | `-0.03em` | `clamp(2.125rem, 1.2rem + 3.94vw, 4.75rem)` |
+| **Heading 1** | 700 | **56 / 60** (`3.5rem`) | **≈42 / 45** (`~2.63rem`) | **34 / 37** (`2.125rem`) | `-0.03em` | `clamp(2.125rem, 1.63rem + 2.1vw, 3.5rem)` |
+| **Heading 2** | 600 | **40 / 46** (`2.5rem`) | **≈31 / 36** (`~1.94rem`) | **26 / 30** (`1.625rem`) | `-0.02em` | `clamp(1.625rem, 1.32rem + 1.3vw, 2.5rem)` |
+| **Heading 3** | 600 | **28 / 34** (`1.75rem`) | **≈23 / 28** (`~1.44rem`) | **20 / 24** (`1.25rem`) | `-0.015em` | `clamp(1.25rem, 1.07rem + 0.75vw, 1.75rem)` |
+| **Subtitle 1** | 500 | **20 / 28** (`1.25rem`) | **≈17.5 / 24.5** (`~1.09rem`) | **16 / 22** (`1.0rem`) | `-0.01em` | `clamp(1.0rem, 0.91rem + 0.38vw, 1.25rem)` |
+| **Subtitle 2** | 500 | **16 / 23** (`1.0rem`) | **≈14.7 / 21.3** (`~0.92rem`) | **14 / 20** (`0.875rem`) | `0em` | `clamp(0.875rem, 0.83rem + 0.19vw, 1.0rem)` |
+| **Body Editorial** | 400 | **18 / 29** (`1.125rem`) | **≈16.8 / 27** (`~1.05rem`) | **16 / 26** (`1.0rem`) | `-0.005em` | `clamp(1.0rem, 0.96rem + 0.19vw, 1.125rem)` |
+| **Body 1** | 400 / 600 | **16 / 24** (`1.0rem`) | **≈15.4 / 23.1** (`~0.96rem`) | **15 / 22** (`0.9375rem`) | `0em` | `clamp(0.9375rem, 0.92rem + 0.09vw, 1.0rem)` |
+| **Body 2** | 400 / 600 | **14 / 21** (`0.875rem`) | **≈13.3 / 19.7** (`~0.83rem`) | **13 / 19** (`0.8125rem`) | `+0.005em` | `clamp(0.8125rem, 0.79rem + 0.09vw, 0.875rem)` |
+
+### Geist Mono Dedicated Scale
+
+| Token Name | Weight | Size / Line Height | Tracking | Typographic Role |
+| :--- | :--- | :--- | :--- | :--- |
+| **Mono Label** | 500 | **`0.75rem / 1.0rem`** (`12px / 16px`) | `+0.14em` (bracket) / `+0.08em` (meta) | Uppercase bracket tags (`[ FEATURED WORK ]`), status badges |
+| **Mono Caption** | 400 | **`0.75rem / 1.0rem`** (`12px / 16px`) | `+0.02em` | Code captions, secondary timestamps, small footnotes |
+| **Mono Data** | 500 | **`clamp(0.8125rem, 0.79rem + 0.09vw, 0.875rem)`** | `+0.02em` (`tabular-nums`) | Timeline table rows, well-log numbers, drill depths |
+
+### Geist Pixel Dedicated Scale (Grid Accent)
+
+| Token Name | Weight | Size / Line Height | Tracking | Typographic Role |
+| :--- | :--- | :--- | :--- | :--- |
+| **Pixel Label** (`.text-pixel-label`) | 500 (`font-synthesis-weight: none`) | **`0.75rem / 1.0rem`** (`12px / 16px`) | `+0.14em` | Section marker bracket tags (`[ 01 // ABOUT ME ]`), technical table markers |
+
+*Catatan Karakteristik & Safeguard*:
+- **Batas Lantai Internal**: Ukuran `0.75rem` (`12px`) merupakan batas lantai minimum internal sistem tipografi kita (bukan ketentuan WCAG langsung, yang tidak mematok angka px minimum). Keterbacaan dan ketajaman rendering matriks piksel perlu diverifikasi visual pada display 1x maupun 2x Retina.
+- **Pencegahan Faux Bold Struktural**: Menyertakan `font-synthesis-weight: none` secara permanen untuk memblokir sintesis browser jika terjadi tumpang tindih kelas `font-bold`.
+- **Kompensasi Tracking**: Untuk label berposisi rata tengah (centered), kombinasikan dengan utilitas `.text-mono-center` (`margin-right: -0.14em`) untuk menetralkan offset tracking akhir.
+
+### Advanced Typography Global Rules
+1. **Heading Balance & Legibility**: All `h1, h2, h3, h4, .text-display, .text-display-sm, .text-h1, .text-h2, .text-h3` use `text-wrap: balance; text-rendering: optimizeLegibility;`
+2. **Paragraph Flow**: All `p, .text-body-editorial, .text-body-1, .text-body-2` use `text-wrap: pretty;`
+3. **Reading Measure**: Use `.measure-editorial` (`max-width: 65ch`) on long-form narrative paragraphs.
+4. **Display Descender Protection**: `.text-display` menyertakan `padding-bottom: 0.08em` (leading ketat `0.96`), sedangkan `.text-display-sm` sengaja memakai `padding-bottom: 0.04em` karena leading-nya lebih longgar (`1.05`), sehingga ruang batas bawah descender (`y`, `p`, `g`) sudah terlindungi tanpa menciptakan ruang kosong berlebih.
+5. **Trailing Tracking Compensation**: Center-aligned Geist Mono labels with wide tracking (`+0.14em`) must use `.text-mono-center` (`margin-right: -0.14em`) to compensate for the trailing space and ensure optical symmetry.
+
+### Pengecualian yang Disengaja (Intentional Exceptions)
+Area-area berikut secara eksplisit dikecualikan dari skala fluid viewport (`vw`):
+1. **Pitchdeck Widget & Interactive Deck (`src/components/deck/`)**:
+   - *Karakteristik*: `DeckSidebar` berukuran lebar tetap (`w-[230px]`), dan slide presentasi di `AboutDeck` / `DeckPanels` adalah kanvas bernisbah tetap yang diskalakan secara matematis menggunakan transformasi GSAP (`scale`).
+   - *Alasan*: Menerapkan skala fluid berbasis `vw` pada kontainer yang lebarnya statis akan merusak proporsi teks; teks akan membesar saat lebar viewport bertambah meskipun sidebar tetap 230px, mengakibatkan overflow dan text wrapping yang rusak. Area ini wajib menggunakan ukuran font statis (`rem`/`px`) atau Container Queries (`@container`).
+2. **ASCII Grid Preloader & Background Canvas Art (7–8.5px)**:
+   - *Karakteristik*: Monospace art sel karakter di `Preloader.tsx` dan `AboutPortfolioSection.tsx` (`ASCII_TREE`).
+   - *Alasan*: Elemen ini bersifat murni dekoratif grafis terminal dan wajib ditandai `aria-hidden="true"`. Ukuran mikro 7–8.5px dengan leading ketat (7.5–8.5px) diperlukan agar matriks kolom dan baris karakter ASCII tersusun presisi membentuk pola visual tanpa terdistorsi oleh fluid scaling.
+3. **Miniatur Preview Kartu Portfolio (Micro Previews 6.5–7px)**:
+   - *Karakteristik*: Label mikro pada miniatur kartu mock di dalam `FeaturedWorkSection.tsx`.
+   - *Alasan*: Merupakan render miniatur skala mini (~120px) yang merepresentasikan thumbnail UI kartu secara visual.
+4. **3D WebGL HUD Overlay Chips & Badges (`FieldLogCanvas3D.tsx:168`)**:
+   - *Karakteristik*: Label chip petunjuk orbital 3D (`[ 360° ORBIT · DRAG TO ROTATE · SCROLL TO ZOOM ]`), berukuran mikro (`text-[9px] sm:text-[10px]`).
+   - *Alasan*: Bersifat petunjuk gestur visual kamera 3D overlay yang murni dekoratif dan ditandai `aria-hidden="true"` agar diabaikan oleh pembaca layar.
 
 ---
 
@@ -640,3 +678,6 @@ Do not invent new visual patterns when an existing token can satisfy the require
 | **v4.0** | 2026-09-25 | RESOLVED | **Decision 16: Final Token Polish & Dimension Locking**<br>Replaced raw `1.2s` with `var(--duration-slow)` (`1.2s`) in Section 8.1; eliminated `bg-[#FFD904]` in favor of `var(--color-signal)` and locked operational status dot to canonical `var(--cursor-size)` (`8px x 8px`) in Section 8.5; aligned `--space-10` description to `sm:` breakpoint. |
 | **v5.0** | 2026-09-25 | RESOLVED | **Decision 17: GSAP-Only Motion Standardization**<br>Introduced the GSAP-Only Motion Rule and Easing Token Consumption guidance in Section 10, clarifying that `--ease-expo`/`--ease-power3` are GSAP-only ease strings while `--ease-smooth` is dual CSS/GSAP-compatible. Rewrote Section 8.2's cursor exit transition to remove the raw `ease-out` CSS reference and explicitly specify a GSAP tween (`gsap.to()`) using `var(--duration-micro)` and `var(--ease-smooth)`. Added matching DO/DON'T rules in Section 15 and an Animation Engine principle in Section 1.<br>*Rationale*: The prior wording implied a native CSS transition for one signature component, inconsistent with the site's GSAP-first motion architecture and the person's explicit intent to standardize on GSAP throughout. |
 | **v5.0** | 2026-09-25 | ADDED — PENDING VERIFICATION | **Decision 18: Field Log Modal Placeholder**<br>Added Section 7.4 for the Field Log Modal, a component previously referenced only in passing (Section 12's `--z-overlay`, Section 4's `--space-6` usage note) but never formally specified. Flagged `⚠️ NEEDS SOURCE VERIFICATION` rather than inventing anatomy/motion details not present in this document's source material. Added Conflict Resolution Rule #4 (Section 14) requiring unverified components to be flagged, not fabricated.<br>*Next step*: supply `FieldLogModal.tsx` (or equivalent source) so this section can be completed and marked RESOLVED. |
+| **v6.0** | 2026-09-29 | RESOLVED | **Decision 19: Canonical Typography System Overhaul (Pure Geist Stack)**<br>Purged legacy Google Font `@import` (`Anton`, `Bebas Neue`, `Newsreader`, `Plus Jakarta Sans`, `Syne`). Standardized 100% on native `Geist Sans` (primary UI) and `Geist Mono` (data/mono). Codified deterministic responsive type scale (Heading 1-3, Subtitle 1-2, Body 1-2 Regular/SemiBold) with `1 rem = 16px` base across Desktop, Tablet, and Mobile breakpoints with locked `[Size]/[Line Height]` metrics in `globals.css` and `DESIGN.md`. |
+| **v6.1** | 2026-09-29 | RESOLVED | **Decision 20: Migration to Tailwind v4 `@utility` Directives & Variant Validation**<br>Migrated all typography utilities from `@layer utilities` to Tailwind CSS v4 native `@utility` directives, enabling full responsive (`lg:text-display`, `sm:text-body-1`, `sm:text-h2`) and state variants. Unified weight 600 body tokens strictly on `.text-body-1-semibold` and `.text-body-2-semibold`. Documented exact 768px clamp linear interpolation metrics and unified `.text-mono-center` with trailing letter-spacing compensation (`margin-right: -0.14em`). |
+

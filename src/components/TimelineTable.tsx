@@ -53,13 +53,13 @@ function PassiveTimelineRow({
         onMouseLeave={handleMouseLeave}
         className="w-full grid grid-cols-12 items-center px-1.5 sm:px-2 py-[2px] sm:py-[1.5px] rounded-hairline text-muted leading-none"
       >
-        <span className="col-span-6 font-jakarta text-[8.5px] sm:text-[10px] md:text-[11px] uppercase tracking-[0.02em] sm:tracking-[0.03em] font-medium truncate leading-none">
+        <span className="col-span-6 text-mono-data tracking-mono-data uppercase font-medium truncate leading-none">
           {item.company}
         </span>
-        <span className="col-span-4 font-jakarta text-[8.5px] sm:text-[10px] md:text-[11px] uppercase tracking-[0.02em] sm:tracking-[0.03em] font-medium truncate leading-none">
+        <span className="col-span-4 text-mono-data tracking-mono-data uppercase font-medium truncate leading-none">
           {item.role}
         </span>
-        <span className="col-span-2 text-right font-jakarta text-[8.5px] sm:text-[10px] md:text-[11px] uppercase tracking-[0.02em] sm:tracking-[0.03em] font-medium tabular-nums leading-none">
+        <span className="col-span-2 text-right text-mono-data tracking-mono-data uppercase font-medium tabular-nums leading-none">
           {item.year}
         </span>
       </div>
@@ -89,11 +89,11 @@ export default function TimelineTable({
     <div className={`w-full max-w-[270px] sm:max-w-[420px] md:max-w-[480px] pointer-events-auto select-text ${className}`}>
       {/* Top Header Row: [JOURNEY] & Dynamic Index Indicator */}
       <div className="mb-2 sm:mb-2.5 flex items-center justify-between px-1 sm:px-2">
-        <span className="font-mono text-[8px] sm:text-[9px] tracking-[0.22em] text-chalk uppercase font-bold">
+        <span className="font-pixel-grid text-mono-label tracking-mono-bracket text-chalk uppercase font-bold">
           [JOURNEY]
         </span>
 
-        <span className="font-mono text-[7.5px] sm:text-[8.5px] tracking-[0.18em] text-muted uppercase font-bold tabular-nums">
+        <span className="font-mono text-mono-label tracking-mono-meta text-muted uppercase font-medium tabular-nums">
           {String(activeIndex + 1).padStart(2, "0")} — {String(TIMELINE_ITEMS.length).padStart(2, "0")}
         </span>
       </div>
@@ -124,13 +124,13 @@ export default function TimelineTable({
               <div className="relative w-full overflow-hidden rounded-hairline">
                 {/* Layer 1: Base Light Text on dark background (visible before loader passes over) */}
                 <div className="w-full grid grid-cols-12 items-center px-1.5 sm:px-2 py-[2px] sm:py-[1.5px] bg-chalk/[0.05] rounded-hairline leading-none">
-                  <span className="col-span-6 font-jakarta text-[8.5px] sm:text-[10px] md:text-[11px] uppercase tracking-[0.02em] sm:tracking-[0.03em] text-chalk font-semibold truncate leading-none">
+                  <span className="col-span-6 text-mono-data tracking-mono-data uppercase text-chalk font-semibold truncate leading-none">
                     {item.company}
                   </span>
-                  <span className="col-span-4 font-jakarta text-[8.5px] sm:text-[10px] md:text-[11px] uppercase tracking-[0.02em] sm:tracking-[0.03em] text-chalk font-semibold truncate leading-none">
+                  <span className="col-span-4 text-mono-data tracking-mono-data uppercase text-chalk font-semibold truncate leading-none">
                     {item.role}
                   </span>
-                  <span className="col-span-2 text-right font-jakarta text-[8.5px] sm:text-[10px] md:text-[11px] uppercase tracking-[0.02em] sm:tracking-[0.03em] text-chalk tabular-nums font-semibold leading-none">
+                  <span className="col-span-2 text-right text-mono-data tracking-mono-data uppercase text-chalk tabular-nums font-semibold leading-none">
                     {item.year}
                   </span>
                 </div>
@@ -144,13 +144,13 @@ export default function TimelineTable({
                   }}
                 >
                   <div className="w-full grid grid-cols-12 items-center px-1.5 sm:px-2 py-[2px] sm:py-[1.5px] leading-none">
-                    <span className="col-span-6 font-jakarta text-[8.5px] sm:text-[10px] md:text-[11px] uppercase tracking-[0.02em] sm:tracking-[0.03em] text-cta-icon font-bold truncate leading-none">
+                    <span className="col-span-6 text-mono-data tracking-mono-data uppercase text-cta-icon font-bold truncate leading-none">
                       {item.company}
                     </span>
-                    <span className="col-span-4 font-jakarta text-[8.5px] sm:text-[10px] md:text-[11px] uppercase tracking-[0.02em] sm:tracking-[0.03em] text-cta-icon font-bold truncate leading-none">
+                    <span className="col-span-4 text-mono-data tracking-mono-data uppercase text-cta-icon font-bold truncate leading-none">
                       {item.role}
                     </span>
-                    <span className="col-span-2 text-right font-jakarta text-[8.5px] sm:text-[10px] md:text-[11px] uppercase tracking-[0.02em] sm:tracking-[0.03em] text-cta-icon tabular-nums font-bold leading-none">
+                    <span className="col-span-2 text-right text-mono-data tracking-mono-data uppercase text-cta-icon tabular-nums font-bold leading-none">
                       {item.year}
                     </span>
                   </div>

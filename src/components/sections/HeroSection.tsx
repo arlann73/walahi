@@ -1,21 +1,13 @@
 "use client";
 
 import { useRef, useState, useEffect, useCallback } from "react";
-import dynamic from "next/dynamic";
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import DotRasterTransition from "@/components/DotRasterTransition";
+import AboutPortfolioSection from "@/components/sections/AboutPortfolioSection";
 import FeaturedWorkSection from "@/components/sections/FeaturedWorkSection";
 import WhatIDoSection from "@/components/sections/WhatIDoSection";
-import TimelineTable from "@/components/TimelineTable";
-import { TIMELINE_ITEMS } from "@/data/journey";
-
-// Dynamically import 3D Canvas scene to isolate Three.js bundle from main page
-const HeroCanvas3D = dynamic(() => import("./HeroCanvas3D"), {
-  ssr: false,
-  loading: () => null,
-});
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -39,42 +31,6 @@ export interface HeroSectionProps {
   on3DReady?: () => void;
   isPreloaderDone?: boolean;
 }
-
-function renderEditorialNarrative(text: string) {
-  const trimmed = text.trim();
-  const startsWithQuote = trimmed.startsWith("“") || trimmed.startsWith('"');
-  const endsWithQuote = trimmed.endsWith("”") || trimmed.endsWith('"');
-
-  if (startsWithQuote && endsWithQuote) {
-    const innerText = trimmed.slice(1, -1);
-    return (
-      <span className="inline">
-        <span
-          aria-hidden="true"
-          className="inline-block font-editorial italic text-[1.12em] text-chalk/40 -ml-[0.32em] mr-[0.05em] align-baseline leading-none select-none"
-        >
-          “
-        </span>
-        <span className="font-editorial italic font-normal text-chalk">
-          {innerText}
-        </span>
-        <span
-          aria-hidden="true"
-          className="inline-block font-editorial italic text-[1.12em] text-chalk/40 ml-[0.05em] align-baseline leading-none select-none"
-        >
-          ”
-        </span>
-      </span>
-    );
-  }
-
-  return (
-    <span className="font-editorial italic font-normal text-chalk">
-      {text}
-    </span>
-  );
-}
-
 
 const ASCII_CHARS = ".:+-/\\*><_~=";
 
@@ -193,7 +149,7 @@ function AsciiScrambleTag({ isPreloaderDone }: { isPreloaderDone: boolean }) {
     >
       <span
         ref={spanRef}
-        className="font-mono text-[9px] sm:text-[10px] md:text-[10.5px] tracking-[0.24em] md:tracking-[0.28em] uppercase text-chalk font-bold inline-block origin-left"
+        className="font-mono text-mono-label tracking-mono-bracket uppercase text-chalk font-bold inline-block origin-left"
       >
         {text}
       </span>
@@ -211,27 +167,6 @@ export default function HeroSection({
   const bottomLineRef = useRef<HTMLDivElement>(null);
   const bottomContentRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef(0);
-
-  const [activeTimelineIndex, setActiveTimelineIndex] = useState<number>(0);
-  const activeTimelineItem = TIMELINE_ITEMS[activeTimelineIndex] || TIMELINE_ITEMS[0];
-  const narrativeRef = useRef<HTMLDivElement>(null);
-
-  // Soft fade-blur reveal whenever active timeline item changes
-  useEffect(() => {
-    if (!narrativeRef.current) return;
-    gsap.fromTo(
-      narrativeRef.current,
-      { opacity: 0, y: 8, filter: "blur(3px)" },
-      {
-        opacity: 1,
-        y: 0,
-        filter: "blur(0px)",
-        duration: 0.45,
-        ease: "power2.out",
-        clearProps: "filter",
-      }
-    );
-  }, [activeTimelineIndex]);
 
   const [timeStr, setTimeStr] = useState<string>("08 : 00 : 00");
   const [lang, setLang] = useState<"ID" | "EN">("EN");
@@ -466,25 +401,32 @@ export default function HeroSection({
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    if (on3DReady) {
+      on3DReady();
+    }
+  }, [on3DReady]);
+
   return (
     <section
       ref={heroRef}
       className="relative h-[100dvh] w-full overflow-hidden bg-canvas flex flex-col justify-between selection:bg-section-accent selection:text-white"
     >
-      {/* Layer 0: 3D Scene (Perspective Camera & Walking Character with Contact Shadow) */}
-      <HeroCanvas3D onReady={on3DReady} scrollProgressRef={progressRef} />
+      {/* Layer 0: Pure Minimalist Canvas Background */}
+      <div className="absolute inset-0 z-0 bg-canvas pointer-events-none" />
 
-      {/* Layer 1: Undulating Dot Raster Wave Transition (Progressively covers 3D Scene & Hero content) */}
+      {/* Layer 1: Undulating Dot Raster Wave Transition (Progressively covers Hero content) */}
       <DotRasterTransition
         progressRef={progressRef}
         textContainerRef={textContainerRef}
         workRideAlongRef={workRideAlongRef}
       />
 
-      {/* Layer 3: Direct Unified Mount: FeaturedWorkSection & WhatIDoSection riding behind wave */}
+      {/* Layer 3: Direct Unified Mount: AboutPortfolioSection, FeaturedWorkSection & WhatIDoSection riding behind wave */}
       <div
         ref={workRideAlongRef}
-        className="absolute top-0 left-0 w-full z-30 pointer-events-auto bg-section-accent text-accent-fg selection:bg-accent-fg selection:text-[#F4F2ED] min-h-[360vh]"
+        id="work-ride-along"
+        className="absolute top-0 left-0 w-full z-30 pointer-events-auto bg-[#121214] text-white selection:bg-white selection:text-black min-h-[480vh]"
         style={{
           transform: "translate3d(0px, 2000px, 0px)",
           willChange: "transform",
@@ -492,6 +434,7 @@ export default function HeroSection({
           WebkitBackfaceVisibility: "hidden",
         }}
       >
+        <AboutPortfolioSection />
         <FeaturedWorkSection />
         <WhatIDoSection />
       </div>
@@ -499,32 +442,23 @@ export default function HeroSection({
       {/* Layer 2: Main Content Area (Foreground) — Translates UP locked with wave */}
       <div
         ref={textContainerRef}
-        className="relative z-20 w-full max-w-[1740px] mx-auto px-4 sm:px-10 lg:px-14 pt-16 sm:pt-24 md:pt-28 flex-1 flex flex-col justify-between pb-12 sm:pb-20 lg:pb-24 pointer-events-none"
+        className="relative z-20 w-full max-w-[1740px] mx-auto px-4 sm:px-10 lg:px-14 pt-16 sm:pt-24 md:pt-28 flex-1 flex flex-col justify-end pb-12 sm:pb-20 lg:pb-24 pointer-events-none"
         style={{
           willChange: "transform",
           backfaceVisibility: "hidden",
           WebkitBackfaceVisibility: "hidden",
         }}
       >
-        {/* Top Region: Compact Editorial Timeline Table (Right-aligned on mobile, Left-aligned on desktop) */}
-        <div className="hero-timeline-wrap w-full flex justify-end lg:justify-start items-start pointer-events-auto select-text pt-1 sm:pt-2">
-          <TimelineTable
-            activeIndex={activeTimelineIndex}
-            onSelect={setActiveTimelineIndex}
-          />
-        </div>
-
-        {/* Bottom Split: Headline on Left, Narrative Quote + Editorial Paragraph on Right */}
-        <div className="w-full pointer-events-none">
-          {/* Middle/Bottom Split: Headline on Left, Editorial Paragraph on Right */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-end mb-2 sm:mb-3">
+        {/* Bottom Split: Headline on Left, Editorial Paragraph on Right */}
+        <div className="w-full pointer-events-none mb-2 sm:mb-3">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-end">
             {/* Left Column: Eyebrow Tag & Giant Brutalist Headline */}
             <div className="lg:col-span-8 flex flex-col items-start">
               {/* ASCII Decoding & Interactive Eyebrow Tag */}
               <AsciiScrambleTag isPreloaderDone={isPreloaderDone} />
 
               <h1
-                className={`hero-headline-wrap font-display font-extrabold text-chalk tracking-tight uppercase leading-[0.92] text-[clamp(2.4rem,5.4vw,84px)] pointer-events-auto select-text w-full ${
+                className={`hero-headline-wrap text-display text-chalk uppercase pointer-events-auto select-text w-full ${
                   !isPreloaderDone ? "opacity-0" : ""
                 }`}
               >
@@ -576,24 +510,13 @@ export default function HeroSection({
               </h1>
             </div>
 
-            {/* Right Column: Dynamic Narrative Quote + Editorial Paragraph (Hidden on Mobile < lg) */}
+            {/* Right Column: Editorial Paragraph (Preserved) */}
             <div
-              className={`hero-editorial-wrap hidden lg:flex lg:col-span-4 flex-col justify-end lg:pl-4 ${
+              className={`hero-editorial-wrap hidden lg:flex lg:col-span-4 flex-col justify-end lg:pl-4 pb-1 ${
                 !isPreloaderDone ? "opacity-0" : ""
               }`}
             >
-              {/* Dynamic Narrative Quote */}
-              <div
-                ref={narrativeRef}
-                className="mb-3 sm:mb-3.5 min-h-[48px] sm:min-h-[54px] flex flex-col justify-end will-change-[transform,opacity,filter]"
-              >
-                <p className="font-editorial italic font-normal text-[15px] sm:text-[16px] md:text-[17px] text-chalk leading-[22px] sm:leading-[24px] tracking-[-0.01em] max-w-[400px] pointer-events-auto select-text">
-                  {renderEditorialNarrative(activeTimelineItem.description)}
-                </p>
-              </div>
-
-              {/* Editorial Profile Paragraph - Monolog Secondary Muted Stone Color */}
-              <p className="font-sans text-muted font-normal text-[12px] sm:text-[13px] md:text-[13.5px] leading-relaxed tracking-normal max-w-[400px] pointer-events-auto select-text">
+              <p className="text-body-editorial measure-editorial text-chalk pointer-events-auto select-text">
                 Curiosity drives me to look beyond the obvious. With a background in geology, I bring analytical thinking, adaptability, and a constant desire to learn into every challenge.
               </p>
             </div>
@@ -609,7 +532,7 @@ export default function HeroSection({
           {/* Horizontal Line */}
           <div
             ref={bottomLineRef}
-            className={`w-full h-[1.5px] bg-chalk/20 mb-[14px] sm:mb-[16px] origin-left ${
+            className={`w-full h-[1.5px] bg-chalk mb-[14px] sm:mb-[16px] origin-left ${
               !isPreloaderDone ? "opacity-0" : ""
             }`}
             style={{ transformOrigin: "left" }}
@@ -618,7 +541,7 @@ export default function HeroSection({
           {/* Micro-Typography Row: 12-Column Editorial Grid matching Locomotive/Monolog reference */}
           <div
             ref={bottomContentRef}
-            className="w-full flex items-center justify-between lg:grid lg:grid-cols-12 font-mono text-[10px] sm:text-[10.5px] md:text-[11px] uppercase tracking-[0.20em] md:tracking-[0.22em] text-chalk"
+            className="w-full flex items-center justify-between lg:grid lg:grid-cols-12 text-mono-label tracking-mono-meta text-chalk"
           >
             {/* Col 1-3: NORTH SUMATRA */}
             <div
@@ -639,10 +562,10 @@ export default function HeroSection({
               }`}
               style={{ clipPath: "inset(0 0% 0 0)" }}
             >
-              <div className="flex items-center gap-1.5 whitespace-nowrap tabular-nums pointer-events-auto select-text tracking-wider text-chalk font-bold">
-                <span className="text-chalk/40">[</span>
+              <div className="flex items-center gap-1.5 whitespace-nowrap text-mono-data tracking-mono-data tabular-nums pointer-events-auto select-text text-chalk font-bold">
+                <span className="text-chalk">[</span>
                 <span>{timeStr}</span>
-                <span className="text-chalk/40">]</span>
+                <span className="text-chalk">]</span>
               </div>
             </div>
 
@@ -653,7 +576,7 @@ export default function HeroSection({
               }`}
               style={{ clipPath: "inset(0 0% 0 0)" }}
             >
-              <span className="text-muted whitespace-nowrap pointer-events-auto select-text font-medium">
+              <span className="text-chalk whitespace-nowrap pointer-events-auto select-text font-medium">
                 FOLLOW US
               </span>
             </div>
@@ -669,12 +592,12 @@ export default function HeroSection({
                 href="https://www.instagram.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                onMouseEnter={(e) => gsap.to(e.currentTarget, { color: "#E2E2DD", duration: 0.2, ease: "power1.out" })}
-                onMouseLeave={(e) => gsap.to(e.currentTarget, { color: "#908C87", duration: 0.2, ease: "power1.out" })}
-                className="text-muted whitespace-nowrap pointer-events-auto cursor-pointer flex items-center gap-1 group font-bold"
+                onMouseEnter={(e) => gsap.to(e.currentTarget, { opacity: 0.6, duration: 0.2, ease: "power1.out" })}
+                onMouseLeave={(e) => gsap.to(e.currentTarget, { opacity: 1, duration: 0.2, ease: "power1.out" })}
+                className="text-chalk whitespace-nowrap pointer-events-auto cursor-pointer flex items-center gap-1 group font-bold"
               >
                 <span>INSTAGRAM</span>
-                <span className="text-chalk/40 group-hover:text-chalk">+</span>
+                <span className="text-chalk">+</span>
               </a>
             </div>
 
@@ -689,12 +612,12 @@ export default function HeroSection({
                 href="https://linkedin.com/in/arlanpras"
                 target="_blank"
                 rel="noopener noreferrer"
-                onMouseEnter={(e) => gsap.to(e.currentTarget, { color: "#E2E2DD", duration: 0.2, ease: "power1.out" })}
-                onMouseLeave={(e) => gsap.to(e.currentTarget, { color: "#908C87", duration: 0.2, ease: "power1.out" })}
-                className="text-muted whitespace-nowrap pointer-events-auto cursor-pointer flex items-center gap-1 group font-bold"
+                onMouseEnter={(e) => gsap.to(e.currentTarget, { opacity: 0.6, duration: 0.2, ease: "power1.out" })}
+                onMouseLeave={(e) => gsap.to(e.currentTarget, { opacity: 1, duration: 0.2, ease: "power1.out" })}
+                className="text-chalk whitespace-nowrap pointer-events-auto cursor-pointer flex items-center gap-1 group font-bold"
               >
                 <span>LINKEDIN</span>
-                <span className="text-chalk/40 group-hover:text-chalk">+</span>
+                <span className="text-chalk">+</span>
               </a>
             </div>
 
@@ -707,7 +630,7 @@ export default function HeroSection({
             >
               <button
                 onClick={() => setLang(lang === "EN" ? "ID" : "EN")}
-                className="flex items-center gap-1.5 cursor-pointer tracking-wider text-chalk font-bold"
+                className="flex items-center gap-1.5 cursor-pointer tracking-mono-meta text-chalk font-bold"
                 title="Switch Language"
               >
                 <span className={lang === "ID" ? "font-extrabold opacity-100" : "opacity-40"}>

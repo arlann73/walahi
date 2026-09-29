@@ -8,7 +8,7 @@ import Preloader from "@/components/Preloader";
 import FieldLogModal from "@/components/FieldLogModal";
 
 export default function Home() {
-  const [is3DReady, setIs3DReady] = useState(false);
+  const [is3DReady, setIs3DReady] = useState(true);
   const [isPreloaderDone, setIsPreloaderDone] = useState(false);
   const [isFieldLogOpen, setIsFieldLogOpen] = useState(false);
   const [activeFieldLogId, setActiveFieldLogId] = useState("undergraduate-researcher");
@@ -96,8 +96,8 @@ export default function Home() {
         <Navbar />
       </div>
 
-      {/* Hero, Opening Credits Film, Featured Work & What I Do Scroll Track */}
-      <div id="hero-track" className="relative w-full h-[700vh] z-30">
+      {/* Hero, Opening Credits Film, About, Featured Work & What I Do Scroll Track */}
+      <div id="hero-track" className="relative w-full h-[950vh] z-30">
         {/* Sticky 100dvh Hero Stage */}
         <div className="sticky top-0 h-[100dvh] w-full z-0 overflow-hidden">
           <HeroSection
