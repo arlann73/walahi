@@ -12,6 +12,7 @@ export default function Home() {
   const [isPreloaderDone, setIsPreloaderDone] = useState(false);
   const [isFieldLogOpen, setIsFieldLogOpen] = useState(false);
   const [activeFieldLogId, setActiveFieldLogId] = useState("undergraduate-researcher");
+  const [activePhotoIndex, setActivePhotoIndex] = useState<number>(0);
   const navbarWrapRef = useRef<HTMLDivElement>(null);
 
   // Hash listener to open/close Field Log modal without page reload
@@ -26,6 +27,16 @@ export default function Home() {
           if (jobId) {
             setActiveFieldLogId(jobId);
           }
+        }
+        // Extract photo index if present: &photo=2
+        if (hash.includes("&photo=")) {
+          const photoParam = hash.split("&photo=")[1]?.split("&")[0];
+          const pIdx = parseInt(photoParam, 10);
+          if (!isNaN(pIdx)) {
+            setActivePhotoIndex(pIdx);
+          }
+        } else {
+          setActivePhotoIndex(0);
         }
       } else {
         setIsFieldLogOpen(false);
@@ -47,6 +58,7 @@ export default function Home() {
 
   const handleSelectFieldLogJob = useCallback((id: string) => {
     setActiveFieldLogId(id);
+    setActivePhotoIndex(0);
     history.replaceState(
       null,
       "",
@@ -96,8 +108,8 @@ export default function Home() {
         <Navbar />
       </div>
 
-      {/* Hero, Opening Credits Film, About, Featured Work & What I Do Scroll Track */}
-      <div id="hero-track" className="relative w-full h-[950vh] z-30">
+      {/* Hero, Opening Credits Film, About, Featured Work, What I Do, Core Values & Contact Scroll Track */}
+      <div id="hero-track" className="relative w-full h-[1450vh] z-30">
         {/* Sticky 100dvh Hero Stage */}
         <div className="sticky top-0 h-[100dvh] w-full z-0 overflow-hidden">
           <HeroSection
@@ -111,6 +123,7 @@ export default function Home() {
       <FieldLogModal
         isOpen={isFieldLogOpen}
         activeId={activeFieldLogId}
+        initialPhotoIndex={activePhotoIndex}
         onClose={handleCloseFieldLog}
         onSelectJob={handleSelectFieldLogJob}
       />

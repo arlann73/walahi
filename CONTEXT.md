@@ -131,7 +131,7 @@ src/
 │   ├── HeroSection.tsx                   # 100dvh sticky hero stage, kinetic dual headline, 12-col bottom ticker
 │   ├── FeaturedWorkSection.tsx           # Editorial red gallery (#D8382B), project rows, dynamic reveal scrub
 │   ├── WhatIDoSection.tsx                # Capabilities showcase (Subsurface, Mine Planning, Geo-GIS)
-│   └── AboutMeSection.tsx                # Independent About section: sticky geologist sidebar & Heynesh cards
+│   └── AboutPortfolioSection.tsx         # Dark editorial About section: ASCII portrait shader, manifesto, 4 body sections
 └── data/
     ├── journey.ts                        # Data kronologis timeline journey Arlan (2019-2025)
     └── fieldLogData.ts                   # Data rinci studi kasus lapangan & operasional geologi
@@ -237,16 +237,12 @@ src/
     3. *Geo-GIS & Spatial Tech* (Pemetaan ArcGIS, Digital Elevation Models, integrasi database spasial).
   - Footer inquiry minimalis yang menautkan langsung ke kontak WhatsApp resmi Arlan (+62 822-6710-8623).
 
-### 4.8 `AboutMeSection` ([`src/components/sections/AboutMeSection.tsx`](file:///d:/Aduhh/src/components/sections/AboutMeSection.tsx))
-- **Peran**: Komponen section mandiri berformat editorial Heynesh untuk membedah profil personal, latar belakang akademis, dan rekam jejak Arlan.
-- **Sticky Left Sidebar (~20-25% width)**:
-  - Identity badge `ARLAN®` dengan pulsing dot warna kuning `--color-signal` (`#FFD904`).
-  - Ringkasan bio, kartu statistik (IPK 3.62 Honors, 6+ Years Journey).
-  - Gelar B.Eng. S.T. ITERA, software chips (`ArcGIS`, `Minescape`, `RockWorks`, `Global Mapper`), dan afiliasi organisasi (`ITERA`, `HMGL`, `MGEI`, `PHR`, `IAGI`).
-  - Tombol CTA yang memicu pembukaan `FieldLogModal`.
-- **Right Timeline Stage (~75-80% width)**:
-  - Kartu milestone bergaya Heynesh (`#EBE7DF`, rounded `28px/32px`, border subtil).
-  - Memetakan 8 pencapaian penting dari tahun 2019 hingga 2025 dengan ikon kustom (Academic, Leadership, Fieldwork, Exploration, Lab, Research, Graduation).
+### 4.8 `AboutPortfolioSection` ([`src/components/sections/AboutPortfolioSection.tsx`](file:///d:/Aduhh/src/components/sections/AboutPortfolioSection.tsx))
+- **Peran**: Komponen editorial portfolio bernuansa gelap (#121214) yang membedah manifesto eksplorasi, latar belakang geologi ITERA, fokus teknis, pengalaman PHR/organisasi, dan kontak.
+- **Architectural Vertical Guidelines**: Garis grid vertikal arsitektur (5 garis) dengan animasi reversible GSAP.
+- **Interactive Realtime Optical ASCII Portrait Shader**: Kanvas shader ASCII interaktif dengan magnetic repulsion cursor trail dan scrub parallax vertikal.
+- **Editorial Manifesto & Cipher Scramble**: Pernyataan visi eksplorasi dengan efek dekripsi karakter acak (`scrambleText`) bertempo presisi.
+- **Awwwards Option B Motion Architecture**: Mengimplementasikan `play none none reset` sehingga konten me-reveal secara mulus saat scroll turun, stabil tanpa flicker saat scroll naik, dan me-reset bersih saat pengguna kembali ke Hero Section.
 
 ### 4.9 `FieldLogModal` ([`src/components/FieldLogModal.tsx`](file:///d:/Aduhh/src/components/FieldLogModal.tsx))
 - **Peran**: Fullscreen pitchdeck & technical field log viewer untuk meninjau detail teknis studi kasus geologi.
@@ -317,7 +313,7 @@ Data otentik bersumber dari kurikulum vitae dan portofolio resmi Prastyo Arlan d
 | **Lantai Grid Kinetik** | Shader GLSL infinite treadmill + crosshair arsitektural | `KineticGridFloor.tsx` | Selesai & Aktif |
 | **Featured Work** | 4 Studi Kasus Utama (Pertamina PHR, ITERA Research, Mine Modeling) | `FeaturedWorkSection.tsx` | Selesai & Aktif |
 | **What I Do** | Subsurface & Logs, Mine Planning 3D, Geo-GIS & Spatial Tech | `WhatIDoSection.tsx` | Selesai & Aktif |
-| **About Arlan** | Profil Geologist, IPK 3.62 Honors, Milestone Cards, Software Chips | `AboutMeSection.tsx` | Selesai & Siap Diintegrasikan |
+| **About Arlan** | Dark Editorial Manifesto, ASCII Shader, 4 Body Segments | `AboutPortfolioSection.tsx` | Selesai & Aktif |
 | **Technical Field Logs** | Log komprehensif sumur, formasi geologi, biostratigrafi, DTM batubara | `FieldLogModal.tsx` & `fieldLogData.ts` | Selesai & Terhubung URL Hash |
 | **Sertifikasi** | Coal Mine Planning Initambang, Pra POP, Jobstreet Data Science, TOEFL | Data terstruktur di modal & CV | Selesai |
 | **Kontak & Inquiry** | WhatsApp (+6282267108623), Email, LinkedIn, Canva CV | `Navbar.tsx`, `HeroSection.tsx`, `WhatIDoSection.tsx` | Selesai & Aktif |

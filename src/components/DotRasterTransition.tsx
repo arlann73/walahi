@@ -51,6 +51,18 @@ export default function DotRasterTransition({
     handleResize();
     window.addEventListener("resize", handleResize);
 
+    const rideAlongResizeObserver = new ResizeObserver(() => {
+      const el = workRideAlongRef?.current;
+      if (!el) return;
+      const scrollH = el.scrollHeight || el.offsetHeight;
+      if (scrollH > 0) {
+        travelDistance = Math.max(2600, scrollH - height + 120);
+      }
+    });
+    if (workRideAlongRef?.current) {
+      rideAlongResizeObserver.observe(workRideAlongRef.current);
+    }
+
     const startTime = performance.now();
 
     // Grid spacing for square pixels (10px grid for clear halftone gradation and high performance)
@@ -200,14 +212,17 @@ export default function DotRasterTransition({
       }
     };
 
-    // Attach to GSAP's central ticker for 100% frame-synced rendering
-    gsap.ticker.add(render);
+    // Attach to GSAP's central ticker for 100% frame-synced rendering.
+    // Prioritized so the ride-along transform is written before any section-level
+    // ticker callbacks that measure positions inside it (e.g. Core Values pinning).
+    gsap.ticker.add(render, false, true);
 
     const textContainerEl = textContainerRef.current;
     const workRideAlongEl = workRideAlongRef?.current;
 
     return () => {
       window.removeEventListener("resize", handleResize);
+      rideAlongResizeObserver.disconnect();
       gsap.ticker.remove(render);
       if (textContainerEl) {
         textContainerEl.style.transform = "";

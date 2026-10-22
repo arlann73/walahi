@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect, useCallback } from "react";
+import Image from "next/image";
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -8,6 +9,8 @@ import DotRasterTransition from "@/components/DotRasterTransition";
 import AboutPortfolioSection from "@/components/sections/AboutPortfolioSection";
 import FeaturedWorkSection from "@/components/sections/FeaturedWorkSection";
 import WhatIDoSection from "@/components/sections/WhatIDoSection";
+import CoreValuesSection from "@/components/sections/CoreValuesSection";
+import ContactSection from "@/components/sections/ContactSection";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -163,10 +166,15 @@ export default function HeroSection({
 }: HeroSectionProps) {
   const heroRef = useRef<HTMLElement>(null);
   const textContainerRef = useRef<HTMLDivElement>(null);
+  const portraitRef = useRef<HTMLDivElement>(null);
   const workRideAlongRef = useRef<HTMLDivElement>(null);
-  const bottomLineRef = useRef<HTMLDivElement>(null);
   const bottomContentRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef(0);
+  const isPreloaderDoneRef = useRef(isPreloaderDone);
+
+  useEffect(() => {
+    isPreloaderDoneRef.current = isPreloaderDone;
+  }, [isPreloaderDone]);
 
   const [timeStr, setTimeStr] = useState<string>("08 : 00 : 00");
   const [lang, setLang] = useState<"ID" | "EN">("EN");
@@ -256,13 +264,6 @@ export default function HeroSection({
       const wipeOut = () => {
         if (isWipedRef.current) return;
         isWipedRef.current = true;
-        gsap.to(bottomLineRef.current, {
-          scaleX: 0,
-          transformOrigin: "left",
-          duration: 0.32,
-          ease: "power2.out",
-          overwrite: "auto",
-        });
         if (bottomItems && bottomItems.length > 0) {
           gsap.to(bottomItems, {
             clipPath: "inset(0 100% 0 0)",
@@ -285,13 +286,6 @@ export default function HeroSection({
       const wipeIn = () => {
         if (!isWipedRef.current) return;
         isWipedRef.current = false;
-        gsap.to(bottomLineRef.current, {
-          scaleX: 1,
-          transformOrigin: "left",
-          duration: 0.3,
-          ease: "power2.out",
-          overwrite: "auto",
-        });
         if (bottomItems && bottomItems.length > 0) {
           gsap.to(bottomItems, {
             clipPath: "inset(0 0% 0 0)",
@@ -309,6 +303,18 @@ export default function HeroSection({
           ease: "power2.out",
           overwrite: "auto",
         });
+
+        // Guaranteed restore of hero portrait when scrolling back up to top
+        if (portraitRef.current && isPreloaderDoneRef.current) {
+          gsap.to(portraitRef.current, {
+            opacity: 1,
+            filter: "blur(0px)",
+            scale: 1,
+            duration: 0.3,
+            ease: "power2.out",
+            overwrite: "auto",
+          });
+        }
       };
 
       const trackEl = document.getElementById("hero-track");
@@ -326,6 +332,29 @@ export default function HeroSection({
             }
           },
         });
+
+        // Portrait inward fade & blur on scroll (bidirectional: fades out going down, fades back in going up)
+        if (portraitRef.current) {
+          ScrollTrigger.create({
+            trigger: trackEl,
+            start: "top top",
+            end: "+=450",
+            scrub: true,
+            onUpdate: (self) => {
+              if (!portraitRef.current || !isPreloaderDoneRef.current) return;
+              const p = Math.max(0, Math.min(1, self.progress));
+              const opacity = 1 - p;
+              const blur = p * 22;
+              const scale = 1 - p * 0.12;
+              gsap.set(portraitRef.current, {
+                opacity,
+                filter: `blur(${blur.toFixed(1)}px)`,
+                scale,
+                overwrite: "auto",
+              });
+            },
+          });
+        }
       }
     },
     { scope: heroRef }
@@ -361,13 +390,15 @@ export default function HeroSection({
         "-=0.75"
       );
 
-      // 4. Horizontal bottom rule draws from left to right
-      tl.fromTo(
-        bottomLineRef.current,
-        { scaleX: 0, transformOrigin: "left" },
-        { scaleX: 1, duration: 0.85, ease: "power2.inOut" },
-        "-=0.7"
-      );
+      // 4. Portrait floats in
+      if (portraitRef.current) {
+        tl.fromTo(
+          portraitRef.current,
+          { opacity: 0, filter: "blur(8px)", scale: 0.96 },
+          { opacity: 1, filter: "blur(0px)", scale: 1, duration: 1.0, ease: "power3.out" },
+          "-=0.75"
+        );
+      }
 
       // 5. Micro-typography items stagger in from left to right
       tl.fromTo(
@@ -422,6 +453,32 @@ export default function HeroSection({
         workRideAlongRef={workRideAlongRef}
       />
 
+      {/* Layer 1.5: Hero Character Portrait (Shifted slightly right & Anchored to Viewport Bottom Edge) */}
+      <div
+        className={`hero-portrait-stage absolute bottom-0 left-[53%] lg:left-[54%] -translate-x-1/2 z-10 pointer-events-none select-none flex items-end justify-center h-[72dvh] sm:h-[76dvh] md:h-[80dvh] lg:h-[84dvh] xl:h-[88dvh] max-h-[880px] w-auto origin-bottom ${
+          !isPreloaderDone ? "opacity-0" : ""
+        }`}
+      >
+        <div
+          ref={portraitRef}
+          className="relative h-full w-auto flex items-end justify-center origin-bottom"
+          style={{
+            willChange: "opacity, filter, transform",
+            backfaceVisibility: "hidden",
+            WebkitBackfaceVisibility: "hidden",
+          }}
+        >
+          <Image
+            src="/arlan-portrait-hero.png"
+            alt="Prastyo Arlan"
+            width={682}
+            height={1024}
+            priority
+            className="h-full w-auto object-contain object-bottom drop-shadow-[0_20px_50px_rgba(0,0,0,0.8)]"
+          />
+        </div>
+      </div>
+
       {/* Layer 3: Direct Unified Mount: AboutPortfolioSection, FeaturedWorkSection & WhatIDoSection riding behind wave */}
       <div
         ref={workRideAlongRef}
@@ -437,6 +494,8 @@ export default function HeroSection({
         <AboutPortfolioSection />
         <FeaturedWorkSection />
         <WhatIDoSection />
+        <CoreValuesSection />
+        <ContactSection />
       </div>
 
       {/* Layer 2: Main Content Area (Foreground) — Translates UP locked with wave */}
@@ -526,18 +585,9 @@ export default function HeroSection({
 
       {/* Layer 3: Bottom Ticker & Status Bar */}
       <div
-        className="absolute bottom-0 inset-x-0 z-20 w-full bg-transparent pb-3 sm:pb-3.5 md:pb-4 pointer-events-none"
+        className="absolute bottom-0 inset-x-0 z-20 w-full bg-transparent pb-3.5 sm:pb-4 md:pb-5 pointer-events-none"
       >
         <div className="max-w-[1740px] mx-auto px-4 sm:px-10 lg:px-14 w-full flex flex-col">
-          {/* Horizontal Line */}
-          <div
-            ref={bottomLineRef}
-            className={`w-full h-[1.5px] bg-chalk mb-[14px] sm:mb-[16px] origin-left ${
-              !isPreloaderDone ? "opacity-0" : ""
-            }`}
-            style={{ transformOrigin: "left" }}
-          />
-
           {/* Micro-Typography Row: 12-Column Editorial Grid matching Locomotive/Monolog reference */}
           <div
             ref={bottomContentRef}

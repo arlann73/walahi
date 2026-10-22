@@ -36,75 +36,120 @@ export default function WhatIDoSection() {
 
   useGSAP(
     () => {
-      // Initial states for fade-in elements
-      gsap.set(".what-ido-fade", { y: 30, opacity: 0 });
+      const mm = gsap.matchMedia();
 
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              gsap.to(".what-ido-fade", {
-                y: 0,
-                opacity: 1,
-                duration: 1.0,
-                stagger: 0.1,
-                ease: "expo.out",
-              });
-              observer.unobserve(entry.target);
-            }
-          });
-        },
-        { rootMargin: "0px 0px -10% 0px", threshold: 0.01 }
-      );
+      mm.add("all", () => {
+        const section = sectionRef.current;
+        if (!section) return;
 
-      if (sectionRef.current) observer.observe(sectionRef.current);
+        // Select all reveal elements tagged with data-reveal or what-ido-fade
+        const revealElements = gsap.utils.toArray<HTMLElement>(
+          "[data-reveal], .what-ido-fade",
+          section
+        );
 
-      // Ambient Background Parallax: smooth vertical float on Sumatra SVG watermark
-      const trackEl = document.getElementById("hero-track");
-      let st: ScrollTrigger | null = null;
-      let handleResize: (() => void) | null = null;
-
-      if (trackEl && watermarkRef.current) {
-        const updateParallax = () => {
-          if (!sectionRef.current || !watermarkRef.current) return;
-          const rect = sectionRef.current.getBoundingClientRect();
-          const windowH = window.innerHeight;
-
-          // Track parallax while section is within or approaching viewport
-          if (rect.bottom > -200 && rect.top < windowH + 200) {
-            const totalTravel = windowH + rect.height;
-            const currentDist = windowH - rect.top;
-            const progress = Math.max(0, Math.min(1, currentDist / totalTravel));
-
-            // Ambient vertical float: moves smoothly from -60px to +60px relative to center
-            const targetY = (progress - 0.5) * 120;
-
-            gsap.to(watermarkRef.current, {
-              y: targetY,
-              duration: 0.25,
-              ease: "power1.out",
-              overwrite: "auto",
-            });
-          }
-        };
-
-        st = ScrollTrigger.create({
-          trigger: trackEl,
-          start: "top top",
-          end: "bottom bottom",
-          onUpdate: updateParallax,
+        // Initial states for fade-in elements (Option B starting position)
+        revealElements.forEach((el) => {
+          gsap.set(el, { y: 36, opacity: 0 });
         });
 
-        handleResize = updateParallax;
-        window.addEventListener("resize", handleResize);
-        updateParallax();
-      }
+        const playReveal = (el: HTMLElement) => {
+          gsap.to(el, {
+            y: 0,
+            opacity: 1,
+            duration: 1.0,
+            ease: "expo.out",
+            overwrite: "auto",
+          });
+        };
 
-      return () => {
-        observer.disconnect();
-        if (handleResize) window.removeEventListener("resize", handleResize);
-        if (st) st.kill();
-      };
+        const resetReveal = (el: HTMLElement) => {
+          gsap.to(el, {
+            y: 36,
+            opacity: 0,
+            duration: 0.35,
+            ease: "power2.in",
+            overwrite: "auto",
+          });
+        };
+
+        // ── Option B State Machine (toggleActions: "play none none reset") ──
+        // - onEnter (entering from bottom): PLAY
+        // - onLeave (scrolling down past it): NONE (stays visible)
+        // - onEnterBack (scrolling up into it): NONE (stays visible, no flicker/reset while reading)
+        // - onLeaveBack (scrolling all the way up above it): RESET (resets to y:36 so it can replay)
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              const target = entry.target as HTMLElement;
+              const isEntering = entry.isIntersecting;
+              const isAbove = entry.boundingClientRect.top > 0;
+
+              if (isEntering && isAbove) {
+                // onEnter: PLAY
+                playReveal(target);
+              } else if (!isEntering && isAbove) {
+                // onLeaveBack: RESET
+                resetReveal(target);
+              }
+            });
+          },
+          { rootMargin: "0px 0px -10% 0px", threshold: 0.05 }
+        );
+
+        revealElements.forEach((el) => observer.observe(el));
+
+        // Ambient Background Parallax: smooth vertical float on Sumatra SVG watermark
+        const trackEl = document.getElementById("hero-track");
+        let st: ScrollTrigger | null = null;
+        let handleResize: (() => void) | null = null;
+
+        if (trackEl && watermarkRef.current) {
+          const updateParallax = () => {
+            if (!sectionRef.current || !watermarkRef.current) return;
+            const rect = sectionRef.current.getBoundingClientRect();
+            const windowH = window.innerHeight;
+
+            // Track parallax while section is within or approaching viewport
+            if (rect.bottom > -200 && rect.top < windowH + 200) {
+              const totalTravel = windowH + rect.height;
+              const currentDist = windowH - rect.top;
+              const progress = Math.max(0, Math.min(1, currentDist / totalTravel));
+
+              // Ambient vertical float: moves smoothly from -60px to +60px relative to center
+              const targetY = (progress - 0.5) * 120;
+
+              gsap.to(watermarkRef.current, {
+                y: targetY,
+                duration: 0.25,
+                ease: "power1.out",
+                overwrite: "auto",
+              });
+            }
+          };
+
+          st = ScrollTrigger.create({
+            trigger: trackEl,
+            start: "top top",
+            end: "bottom bottom",
+            onUpdate: updateParallax,
+          });
+
+          handleResize = updateParallax;
+          window.addEventListener("resize", handleResize);
+          updateParallax();
+        }
+
+        return () => {
+          observer.disconnect();
+          if (handleResize) window.removeEventListener("resize", handleResize);
+          if (st) st.kill();
+        };
+      });
+
+      document.fonts?.ready.then(() => ScrollTrigger.refresh());
+
+      return () => mm.revert();
     },
     { scope: sectionRef }
   );
@@ -123,8 +168,8 @@ export default function WhatIDoSection() {
       />
 
       {/* Sumatra Watermark Background with GSAP Parallax Float */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-[60%] -translate-y-1/2 w-[400px] sm:w-[600px] lg:w-[850px] xl:w-[1000px] aspect-square pointer-events-none z-0 opacity-70 what-ido-fade will-change-[transform,opacity]">
-        <div ref={watermarkRef} className="relative w-full h-full will-change-transform">
+      <div className="absolute top-1/2 left-1/2 -translate-x-[60%] -translate-y-1/2 w-[400px] sm:w-[600px] lg:w-[850px] xl:w-[1000px] aspect-square pointer-events-none z-0 opacity-70 data-reveal what-ido-fade">
+        <div ref={watermarkRef} className="relative w-full h-full">
           <Image
             src="/Sumatra.svg"
             alt="Sumatra Watermark"
@@ -137,7 +182,7 @@ export default function WhatIDoSection() {
 
       <div className="w-full max-w-[1740px] mx-auto relative z-10">
         {/* Header */}
-        <header className="w-full flex justify-between items-start z-30 relative mb-8 md:mb-10 what-ido-fade will-change-[transform,opacity]">
+        <header data-reveal className="w-full flex justify-between items-start z-30 relative mb-8 md:mb-10 what-ido-fade">
           <div>
             <h2 className="text-h1 text-white select-none">
               WHAT I DO.
@@ -146,7 +191,7 @@ export default function WhatIDoSection() {
         </header>
 
         {/* Category Pills Navigation */}
-        <div className="flex flex-wrap items-center gap-2 mb-10 what-ido-fade will-change-[transform,opacity]">
+        <div data-reveal className="flex flex-wrap items-center gap-2 mb-10 what-ido-fade">
           {["GEOLOGY", "DATA ANALYSIS", "VIBE CODING & AI"].map((pill) => (
             <button
               key={pill}
@@ -171,14 +216,14 @@ export default function WhatIDoSection() {
         </div>
 
         {/* Agency Mission Statement Paragraph */}
-        <div className="max-w-4xl what-ido-fade will-change-[transform,opacity]">
+        <div data-reveal className="max-w-4xl what-ido-fade">
           <p className="text-h3 text-gray-100">
             I bridge the gap between earth sciences and digital innovation. With a deep interest in data analysis and AI-driven workflows, I actively explore tech-assisted solutions to solve complex problems. By combining a strong scientific approach with a modern digital mindset, I bring fresh perspectives, high adaptability, and an eagerness to learn to every project I take on.
           </p>
         </div>
 
         {/* Bottom Services Grid & Direct Contact */}
-        <div className="mt-24 md:mt-32 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-start what-ido-fade will-change-[transform,opacity]">
+        <div data-reveal className="mt-24 md:mt-32 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-start what-ido-fade">
           {/* Bottom Left Contact Callout */}
           <div className="lg:col-span-4 xl:col-span-5 flex flex-wrap items-center gap-3 pt-1">
             <span className="text-body-2 font-normal text-gray-300">

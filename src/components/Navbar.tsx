@@ -64,9 +64,11 @@ function NavItem({
 function LetsTalkCta({
   avatarSrc,
   setAvatarSrc,
+  onClick,
 }: {
   avatarSrc: string;
   setAvatarSrc: (src: string) => void;
+  onClick?: (e: React.MouseEvent) => void;
 }) {
   const containerRef = useRef<HTMLAnchorElement>(null);
   const avatarImgRef = useRef<HTMLDivElement>(null);
@@ -194,6 +196,7 @@ function LetsTalkCta({
     <Link
       ref={containerRef}
       href="/#contact"
+      onClick={onClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       className="group relative flex items-center justify-between w-full h-[31px] bg-chalk text-cta-icon rounded-squircle pl-1 pr-1.5 shadow-[0_4px_16px_rgba(0,0,0,0.25)] border border-[#0A0A09]/10 overflow-hidden cursor-pointer select-none"
@@ -253,7 +256,7 @@ export default function Navbar() {
   const [avatarSrc, setAvatarSrc] = useState("/avatar.jpg");
 
   const handleNavClick = useCallback(
-    (section: "about" | "work" | "what-i-do") => {
+    (section: "about" | "work" | "what-i-do" | "contact") => {
       if (pathname !== "/") {
         router.push(`/#${section}`);
         return;
@@ -278,6 +281,11 @@ export default function Navbar() {
       } else if (section === "what-i-do") {
         const whatEl = document.getElementById("what-i-do");
         const offset = whatEl ? whatEl.offsetTop : 2800;
+        const deepP = Math.min(1.0, Math.max(0, offset / travelDistance));
+        targetP = 0.35 + deepP * 0.65;
+      } else if (section === "contact") {
+        const contactEl = document.getElementById("contact");
+        const offset = contactEl ? contactEl.offsetTop : travelDistance;
         const deepP = Math.min(1.0, Math.max(0, offset / travelDistance));
         targetP = 0.35 + deepP * 0.65;
       }
@@ -319,7 +327,16 @@ export default function Navbar() {
 
       {/* Far Right: Luxury "LET'S TALK" CTA & Floating Pitchdeck Card Stack (160px width) */}
       <div className="pointer-events-auto flex flex-col items-end gap-2.5 ml-auto shrink-0 z-10 w-[160px]">
-        <LetsTalkCta avatarSrc={avatarSrc} setAvatarSrc={setAvatarSrc} />
+        <LetsTalkCta
+          avatarSrc={avatarSrc}
+          setAvatarSrc={setAvatarSrc}
+          onClick={(e) => {
+            if (pathname === "/") {
+              e.preventDefault();
+              handleNavClick("contact");
+            }
+          }}
+        />
         {pathname === "/" && <PitchdeckWidget />}
       </div>
     </header>

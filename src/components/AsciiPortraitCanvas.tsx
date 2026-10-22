@@ -38,14 +38,6 @@ const GLYPH_RAMPS = {
   ],
 };
 
-interface SamplePoint {
-  col: number;
-  row: number;
-  baseX: number;
-  baseY: number;
-  glyph: string;
-}
-
 export default function AsciiPortraitCanvas({
   src = "/arlan-face-dark.jpg",
   charSize = 5,
@@ -67,7 +59,6 @@ export default function AsciiPortraitCanvas({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mounted = useMounted();
 
-  // Telemetry state matching runtime specs
   const [telemetry, setTelemetry] = useState({
     cursorX: 0,
     cursorY: 0,
@@ -86,17 +77,14 @@ export default function AsciiPortraitCanvas({
     const ctx = canvas.getContext("2d", { willReadFrequently: true });
     if (!ctx) return;
 
-    // Offscreen sampling canvas
     const sampleCanvas = document.createElement("canvas");
     const sampleCtx = sampleCanvas.getContext("2d", { willReadFrequently: true });
     if (!sampleCtx) return;
 
-    // Load active image
     const img = new Image();
     img.crossOrigin = "anonymous";
     img.src = src;
 
-    // Engine state
     let isVisible = true;
     let animId = 0;
     let mouseX = -9999;
@@ -107,104 +95,9 @@ export default function AsciiPortraitCanvas({
     let fps = 60;
     let lastHudUpdate = 0;
 
-    let points: SamplePoint[] = [];
     const palette = GLYPH_RAMPS[charsetKey] || GLYPH_RAMPS.kaspar;
     const paletteMax = palette.length - 1;
 
-    // Pre-calculate sample points whenever canvas dimensions or image change
-    function rebuildSamples() {
-      if (!canvas || !container || !sampleCtx) return;
-      if (!img.complete || img.naturalWidth === 0) return;
-
-      const width = canvas.width;
-      const height = canvas.height;
-
-      const cols = Math.floor(width / charSize);
-      const rows = Math.floor(height / charSize);
-
-      if (cols <= 0 || rows <= 0) return;
-
-      sampleCanvas.width = cols;
-      sampleCanvas.height = rows;
-
-      // Draw image fit within cols x rows maintaining aspect ratio
-      sampleCtx.clearRect(0, 0, cols, rows);
-
-      // Aspect fit calculation
-      const imgRatio = img.naturalWidth / img.naturalHeight;
-      const cvsRatio = cols / rows;
-
-      let drawW = cols;
-      let drawH = rows;
-      let drawX = 0;
-      let drawY = 0;
-
-      if (imgRatio > cvsRatio) {
-        drawW = Math.round(rows * imgRatio);
-        drawX = Math.round((cols - drawW) / 2);
-      } else {
-        drawH = Math.round(cols / imgRatio);
-        drawY = Math.round((rows - drawH) / 2);
-      }
-
-      sampleCtx.drawImage(img, drawX, drawY, drawW, drawH);
-
-      const imgData = sampleCtx.getImageData(0, 0, cols, rows).data;
-      const newPoints: SamplePoint[] = [];
-
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-          const idx = (r * cols + c) * 4;
-          const alpha = imgData[idx + 3];
-          if (alpha < 20) continue;
-
-          const red = imgData[idx];
-          const green = imgData[idx + 1];
-          const blue = imgData[idx + 2];
-
-          // ITU-R BT.601 Perceptual Luminance
-          let lum = (0.299 * red + 0.587 * green + 0.114 * blue) / 255;
-
-          // Brightness offset
-          lum += brightness;
-
-          // Optical contrast curve
-          lum = Math.pow(Math.max(0, Math.min(1, lum)), contrast);
-
-          // Invert: White studio background (lum=1.0) maps to space (' ')
-          // Darker portrait features map to dense ASCII glyphs
-          if (!invert) {
-            lum = 1.0 - lum;
-          }
-
-          lum = Math.max(0, Math.min(1, lum));
-
-          const charIdx = Math.floor(lum * paletteMax);
-          const glyph = palette[charIdx];
-
-          if (!glyph || glyph === " ") continue;
-
-          newPoints.push({
-            col: c,
-            row: r,
-            baseX: c * charSize + charSize / 2,
-            baseY: r * charSize + charSize / 2,
-            glyph,
-          });
-        }
-      }
-
-      points = newPoints;
-      setTelemetry((prev) => ({
-        ...prev,
-        samples: points.length,
-        totalGlyphs: cols * rows,
-        matrixCols: cols,
-        matrixRows: rows,
-      }));
-    }
-
-    // Resize handler
     function handleResize() {
       if (!canvas || !container) return;
       const rect = container.getBoundingClientRect();
@@ -223,16 +116,13 @@ export default function AsciiPortraitCanvas({
         canvas.width = finalW;
         canvas.height = finalH;
       }
-      rebuildSamples();
     }
 
     img.onload = () => {
       handleResize();
-      rebuildSamples();
     };
     if (img.complete && img.naturalWidth > 0) {
       handleResize();
-      rebuildSamples();
     }
 
     const resizeObserver = new ResizeObserver(() => {
@@ -240,7 +130,6 @@ export default function AsciiPortraitCanvas({
     });
     resizeObserver.observe(container);
 
-    // Global mouse/touch tracking across window with proximity boundary check
     function handleMouseMove(e: MouseEvent) {
       if (!canvas) return;
       const rect = canvas.getBoundingClientRect();
@@ -288,7 +177,6 @@ export default function AsciiPortraitCanvas({
     window.addEventListener("touchmove", handleTouchMove, { passive: true });
     window.addEventListener("touchend", handleMouseLeave, { passive: true });
 
-    // Visibility Observer to pause loop when scrolled out of view
     const visibilityObserver = new IntersectionObserver(
       (entries) => {
         const [entry] = entries;
@@ -302,61 +190,115 @@ export default function AsciiPortraitCanvas({
     );
     visibilityObserver.observe(container);
 
-    // Main animation loop
+    // Real-time raster loop — mirrors reference engine's renderLoop exactly
     function render() {
       if (!isVisible) {
         animId = 0;
         return;
       }
 
-      // Smooth mouse interpolation
+      // Smooth mouse physics interpolation
       smoothMouseX += (mouseX - smoothMouseX) * 0.18;
       smoothMouseY += (mouseY - smoothMouseY) * 0.18;
 
-      ctx!.clearRect(0, 0, canvas!.width, canvas!.height);
-      ctx!.font = `${charSize}px var(--font-mono), 'Space Mono', monospace`;
-      ctx!.textAlign = "center";
-      ctx!.textBaseline = "middle";
-      ctx!.fillStyle = "#F9F4EB";
+      const w = canvas!.width;
+      const h = canvas!.height;
+      const charStep = charSize;
+      const cols = Math.floor(w / charStep);
+      const rows = Math.floor(h / charStep);
 
-      const hasMouse = smoothMouseX > -400 && smoothMouseY > -400;
+      if (cols > 0 && rows > 0 && img.complete && img.naturalWidth > 0) {
+        // Downsample: direct stretch to grid — matches reference exactly
+        sampleCanvas.width = cols;
+        sampleCanvas.height = rows;
+        sampleCtx!.drawImage(img, 0, 0, cols, rows);
 
-      for (let i = 0; i < points.length; i++) {
-        const pt = points[i];
-        let px = pt.baseX;
-        let py = pt.baseY;
+        const imgData = sampleCtx!.getImageData(0, 0, cols, rows).data;
 
-        // Dynamic magnetic repulsion
-        if (hasMouse) {
-          const dx = px - smoothMouseX;
-          const dy = py - smoothMouseY;
-          const dist = Math.sqrt(dx * dx + dy * dy);
+        // Clear canvas
+        ctx!.clearRect(0, 0, w, h);
 
-          if (dist < radius && dist > 0.001) {
-            const push = (1.0 - dist / radius) * force;
-            px += (dx / dist) * push;
-            py += (dy / dist) * push;
+        // Typography — hardcoded 'Space Mono' matching reference engine
+        ctx!.font = `${charStep}px 'Space Mono', monospace`;
+        ctx!.textAlign = "center";
+        ctx!.textBaseline = "middle";
+        ctx!.fillStyle = "#F9F4EB";
+
+        const rRadius = radius;
+        const rForce = force;
+        const hasMouse = smoothMouseX > 0 && smoothMouseY > 0;
+        let activeCount = 0;
+
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            const pixelIdx = (r * cols + c) * 4;
+            const red = imgData[pixelIdx];
+            const green = imgData[pixelIdx + 1];
+            const blue = imgData[pixelIdx + 2];
+
+            // ITU-R BT.601 Perceptual Luminance
+            let lum = (0.299 * red + 0.587 * green + 0.114 * blue) / 255;
+
+            // Brightness offset
+            lum += brightness;
+
+            // Optical contrast exponential curve
+            lum = Math.pow(Math.max(0, Math.min(1, lum)), contrast);
+
+            // Invert density mapping
+            if (!invert) {
+              lum = 1.0 - lum;
+            }
+
+            lum = Math.max(0, Math.min(1, lum));
+
+            // Glyph indexing
+            const charIdx = Math.floor(lum * paletteMax);
+            const glyph = palette[charIdx];
+
+            // Skip whitespace
+            if (glyph === " ") continue;
+
+            activeCount++;
+
+            let px = c * charStep + charStep / 2;
+            let py = r * charStep + charStep / 2;
+
+            // Dynamic magnetic repulsion
+            if (hasMouse) {
+              const dx = px - smoothMouseX;
+              const dy = py - smoothMouseY;
+              const dist = Math.sqrt(dx * dx + dy * dy);
+
+              if (dist < rRadius && dist > 0.001) {
+                const push = (1.0 - dist / rRadius) * rForce;
+                px += (dx / dist) * push;
+                py += (dy / dist) * push;
+              }
+            }
+
+            ctx!.fillText(glyph, px, py);
           }
         }
 
-        ctx!.fillText(pt.glyph, px, py);
-      }
+        // FPS benchmark and telemetry update (throttled to 4Hz)
+        const now = performance.now();
+        const delta = (now - lastFrame) / 1000;
+        lastFrame = now;
+        fps = Math.round(0.92 * fps + 0.08 * (1 / (delta || 0.016)));
 
-      // FPS benchmark and telemetry update (throttled to 4Hz for React performance)
-      const now = performance.now();
-      const delta = (now - lastFrame) / 1000;
-      lastFrame = now;
-      fps = Math.round(0.92 * fps + 0.08 * (1 / (delta || 0.016)));
-
-      if (now - lastHudUpdate > 250) {
-        lastHudUpdate = now;
-        setTelemetry((prev) => ({
-          ...prev,
-          cursorX: hasMouse ? Math.max(0, Math.round(smoothMouseX)) : 0,
-          cursorY: hasMouse ? Math.max(0, Math.round(smoothMouseY)) : 0,
-          fps: isNaN(fps) ? 56 : Math.min(120, fps),
-          samples: points.length,
-        }));
+        if (now - lastHudUpdate > 250) {
+          lastHudUpdate = now;
+          setTelemetry({
+            cursorX: hasMouse ? Math.max(0, Math.round(smoothMouseX)) : 0,
+            cursorY: hasMouse ? Math.max(0, Math.round(smoothMouseY)) : 0,
+            fps: isNaN(fps) ? 56 : Math.min(120, fps),
+            samples: activeCount,
+            totalGlyphs: cols * rows,
+            matrixCols: cols,
+            matrixRows: rows,
+          });
+        }
       }
 
       animId = requestAnimationFrame(render);
@@ -383,7 +325,6 @@ export default function AsciiPortraitCanvas({
           : "items-center justify-center"
       } pointer-events-none select-none ${className}`}
     >
-      {/* Real-time ASCII Canvas */}
       <canvas
         ref={canvasRef}
         style={{
@@ -394,7 +335,6 @@ export default function AsciiPortraitCanvas({
         className="will-change-transform drop-shadow-[0_0_24px_rgba(249,244,235,0.06)]"
       />
 
-      {/* Floating Telemetry HUD */}
       {showHud && mounted && (
         <div
           suppressHydrationWarning
@@ -420,3 +360,4 @@ export default function AsciiPortraitCanvas({
     </div>
   );
 }
+

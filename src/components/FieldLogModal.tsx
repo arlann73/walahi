@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef, useCallback } from "react";
+import Image from "next/image";
 import dynamic from "next/dynamic";
 import { FIELD_LOG_DATA } from "@/data/fieldLogData";
 import { Layers, Compass, Pickaxe, User, type LucideIcon } from "lucide-react";
@@ -14,6 +15,7 @@ const FieldLogCanvas3D = dynamic(() => import("./FieldLogCanvas3D"), {
 interface FieldLogModalProps {
   isOpen: boolean;
   activeId?: string;
+  initialPhotoIndex?: number;
   onClose: () => void;
   onSelectJob: (id: string) => void;
 }
@@ -28,12 +30,42 @@ const CATEGORY_ICONS: Record<string, LucideIcon> = {
 export default function FieldLogModal({
   isOpen,
   activeId = "undergraduate-researcher",
+  initialPhotoIndex = 0,
   onClose,
   onSelectJob,
 }: FieldLogModalProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [prevSync, setPrevSync] = useState({ activeId, initialPhotoIndex });
+  const [selectedPhotoIdx, setSelectedPhotoIdx] = useState<number | null>(null);
+  const [fescoMode, setFescoMode] = useState<"presentation" | "gallery">("presentation");
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+
+  if (prevSync.activeId !== activeId || prevSync.initialPhotoIndex !== initialPhotoIndex) {
+    setPrevSync({ activeId, initialPhotoIndex });
+    setSelectedPhotoIdx(null);
+    setFescoMode("presentation");
+    setIsLightboxOpen(false);
+  }
+
+  const activePhotoIdx = selectedPhotoIdx ?? initialPhotoIndex ?? 0;
   const modalContainerRef = useRef<HTMLDivElement>(null);
   const asideRef = useRef<HTMLElement>(null);
+  const photoDisplayRef = useRef<HTMLDivElement>(null);
+
+  const handleSelectPhoto = useCallback((idx: number) => {
+    setSelectedPhotoIdx(idx);
+  }, []);
+
+  // GSAP subtle transition when photo index changes
+  useEffect(() => {
+    if (photoDisplayRef.current) {
+      gsap.fromTo(
+        photoDisplayRef.current,
+        { opacity: 0.5, scale: 0.98 },
+        { opacity: 1, scale: 1, duration: 0.35, ease: "power2.out" }
+      );
+    }
+  }, [activePhotoIdx]);
 
   // Derive currently active item directly from activeId prop
   const activeItem =
@@ -55,12 +87,16 @@ export default function FieldLogModal({
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape" && isOpen) {
-        onClose();
+        if (isLightboxOpen) {
+          setIsLightboxOpen(false);
+        } else {
+          onClose();
+        }
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, isLightboxOpen]);
 
   // Lock body scroll when modal is open
   useEffect(() => {
@@ -79,6 +115,173 @@ export default function FieldLogModal({
     },
     [onSelectJob]
   );
+
+  const renderPhotoGallery = (isMobile: boolean) => {
+    if (!activeItem.galleryPhotos || activeItem.galleryPhotos.length === 0) return null;
+    const currentPhoto = activeItem.galleryPhotos[activePhotoIdx] ?? activeItem.galleryPhotos[0];
+
+    return (
+      <div className={isMobile ? "lg:hidden pt-4 pb-2" : "hidden lg:flex flex-col w-full max-w-[480px] xl:max-w-[540px]"}>
+        {/* Gallery Header */}
+        <div className="flex items-center justify-between pb-2 mb-2 border-b border-hairline font-mono text-[9px] tracking-mono-bracket text-muted uppercase">
+          <span>[ FIELD ARCHIVE // 0{activePhotoIdx + 1} OF 0{activeItem.galleryPhotos.length} ]</span>
+          <span className="text-chalk/60 font-semibold">{currentPhoto.isWide ? "16:9 REPOSITORY" : "9:16 LAB VIEW"}</span>
+        </div>
+
+        {/* Featured Photo Display */}
+        <div
+          ref={!isMobile ? photoDisplayRef : undefined}
+          className="relative w-full aspect-[16/10] max-h-[290px] xl:max-h-[320px] rounded-sm overflow-hidden bg-black/60 border border-hairline shadow-2xl"
+        >
+          <Image
+            src={currentPhoto.url}
+            alt={currentPhoto.title}
+            fill
+            priority
+            sizes="(max-width: 1024px) 100vw, 540px"
+            className="object-cover object-center"
+          />
+          {/* Subtle inner hairline border */}
+          <div className="absolute inset-0 ring-1 ring-inset ring-white/10 pointer-events-none rounded-sm" />
+        </div>
+
+        {/* Title and Caption */}
+        <div className="pt-2.5 pb-2">
+          <h4 className="font-sans font-medium text-xs sm:text-[13px] text-chalk leading-snug">
+            {currentPhoto.title}
+          </h4>
+          <p className="font-mono text-[10px] sm:text-[11px] text-muted leading-relaxed pt-0.5">
+            {currentPhoto.caption}
+          </p>
+        </div>
+
+        {/* 4 Mini Thumbnails Selector */}
+        <div className="flex items-center gap-2 pt-1" role="tablist" aria-label="Field documentation photos">
+          {activeItem.galleryPhotos.map((photo, pIdx) => {
+            const isSelected = pIdx === activePhotoIdx;
+            return (
+              <button
+                key={pIdx}
+                type="button"
+                role="tab"
+                aria-selected={isSelected}
+                aria-label={`Select photo ${pIdx + 1}: ${photo.title}`}
+                onClick={() => handleSelectPhoto(pIdx)}
+                className={`relative w-14 h-9 sm:w-16 sm:h-10 rounded-micro overflow-hidden cursor-pointer transition-all ${
+                  isSelected
+                    ? "ring-2 ring-chalk shadow-md opacity-100"
+                    : "ring-1 ring-hairline opacity-45 hover:opacity-85"
+                }`}
+              >
+                <Image
+                  src={photo.url}
+                  alt={photo.title}
+                  fill
+                  sizes="64px"
+                  className="object-cover object-center"
+                />
+                <span className="absolute bottom-0.5 right-1 font-mono text-[7px] text-white font-bold drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
+                  0{pIdx + 1}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
+  const renderFescoShowcase = (isMobile: boolean) => {
+    return (
+      <div
+        className={
+          isMobile
+            ? "lg:hidden pt-4 pb-2 w-full"
+            : "hidden lg:flex flex-col w-full max-w-[480px] xl:max-w-[540px] h-[calc(100vh-170px)]"
+        }
+      >
+        {/* Gallery / Presentation Header toolbar */}
+        <div className="flex items-center justify-between pb-2 mb-2 border-b border-hairline font-mono text-[9px] tracking-mono-bracket text-muted uppercase shrink-0">
+          <span className="text-chalk font-semibold">[ ✦ BRAND DOSSIER ]</span>
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => setFescoMode("presentation")}
+              className={`px-2 py-0.5 rounded-micro text-[8.5px] font-mono tracking-wider uppercase transition-colors cursor-pointer ${
+                fescoMode === "presentation"
+                  ? "bg-white text-black font-semibold"
+                  : "border border-hairline text-muted hover:text-white"
+              }`}
+            >
+              PRESENTATION
+            </button>
+            <button
+              type="button"
+              onClick={() => setFescoMode("gallery")}
+              className={`px-2 py-0.5 rounded-micro text-[8.5px] font-mono tracking-wider uppercase transition-colors cursor-pointer ${
+                fescoMode === "gallery"
+                  ? "bg-white text-black font-semibold"
+                  : "border border-hairline text-muted hover:text-white"
+              }`}
+            >
+              ASSETS (4)
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsLightboxOpen(true)}
+              className="px-2 py-0.5 rounded-micro border border-hairline hover:border-chalk text-chalk hover:text-white text-[8.5px] font-mono tracking-wider uppercase transition-colors cursor-pointer ml-1"
+              title="Expand Fullscreen"
+            >
+              EXPAND ⤢
+            </button>
+          </div>
+        </div>
+
+        {/* Content View */}
+        {fescoMode === "presentation" ? (
+          <div
+            className={`flex flex-col bg-surface/90 border border-hairline rounded-sm shadow-2xl overflow-hidden ${
+              isMobile ? "h-[480px] w-full" : "flex-1 min-h-0"
+            }`}
+          >
+            {/* Presentation Subheader */}
+            <div className="px-3 py-1.5 border-b border-hairline/80 bg-black/40 flex items-center justify-between font-mono text-[8px] sm:text-[8.5px] text-muted tracking-wider uppercase shrink-0">
+              <span className="text-chalk/80">BRAND GUIDELINES SHEET</span>
+              <span className="text-signal flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-signal animate-pulse" />
+                SCROLL TO EXPLORE
+              </span>
+            </div>
+
+            {/* Scrollable Viewport */}
+            <div
+              onClick={() => setIsLightboxOpen(true)}
+              className="flex-1 overflow-y-auto scrollbar-thin p-3 sm:p-4 bg-[#141211] flex flex-col items-center cursor-zoom-in group/sheet relative"
+              title="Click to view fullscreen presentation"
+            >
+              <div className="relative w-full max-w-[360px] rounded-xs overflow-hidden shadow-2xl border border-white/10 group-hover/sheet:border-white/30 transition-colors">
+                <Image
+                  src="/projects/fesco-brand-presentation.png"
+                  alt="FESCO Brand Identity & Packaging Presentation"
+                  width={356}
+                  height={1024}
+                  className="w-full h-auto block"
+                  priority
+                />
+              </div>
+
+              {/* Hover Badge */}
+              <div className="sticky bottom-2 mt-3 px-3 py-1 rounded-micro bg-black/85 backdrop-blur-md border border-hairline text-chalk font-mono text-[8px] sm:text-[9px] tracking-mono-bracket flex items-center gap-1.5 pointer-events-none opacity-80 group-hover/sheet:opacity-100 transition-opacity shadow-lg">
+                <span>[ ⤢ CLICK TO EXPAND FULLSCREEN ]</span>
+              </div>
+            </div>
+          </div>
+        ) : (
+          renderPhotoGallery(isMobile)
+        )}
+      </div>
+    );
+  };
 
   if (!isOpen) return null;
 
@@ -131,9 +334,64 @@ export default function FieldLogModal({
       </div>
 
       {/* ============================================================ */}
-      {/* 2. CENTER STAGE: 3D ARTEFACT VIEWPORT (EXCLUSIVELY FOR ARLAN)*/}
+      {/* 2. CENTER STAGE: 3D ARTEFACT VIEWPORT OR PHOTO GALLERY       */}
       {/* ============================================================ */}
-      {activeItem.id === "arlan" ? (
+      {activeItem.id === "arlan" && activePhotoIdx === 0 ? (
+        <div className="absolute inset-0 z-10 pointer-events-auto">
+          <FieldLogCanvas3D />
+          {/* Overlay Switcher for Arlan Design Showcases */}
+          {activeItem.galleryPhotos && activeItem.galleryPhotos.length > 0 && (
+            <div className="hidden lg:flex absolute bottom-8 left-[560px] xl:left-[620px] right-[240px] xl:right-[280px] z-30 pointer-events-auto flex-col items-start gap-2 bg-surface/85 backdrop-blur-md p-3 rounded-sm border border-hairline shadow-2xl">
+              <div className="flex items-center justify-between w-full font-mono text-[9px] tracking-mono-bracket text-muted uppercase">
+                <span>[ 3D ARTEFACT ACTIVE // EXPLORE DESIGN ARCHIVES ]</span>
+                <span className="text-signal flex items-center gap-1.5 font-semibold">
+                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-signal animate-pulse" />
+                  LIVE 3D
+                </span>
+              </div>
+              <div className="flex items-center gap-2" role="tablist" aria-label="Arlan design showcases">
+                {activeItem.galleryPhotos.map((photo, pIdx) => {
+                  const isSelected = pIdx === activePhotoIdx;
+                  return (
+                    <button
+                      key={pIdx}
+                      type="button"
+                      role="tab"
+                      aria-selected={isSelected}
+                      aria-label={`Select showcase ${pIdx + 1}: ${photo.title}`}
+                      onClick={() => handleSelectPhoto(pIdx)}
+                      className={`relative w-14 h-9 sm:w-16 sm:h-10 rounded-micro overflow-hidden cursor-pointer transition-all ${
+                        isSelected
+                          ? "ring-2 ring-chalk shadow-md opacity-100"
+                          : "ring-1 ring-hairline opacity-50 hover:opacity-90"
+                      }`}
+                    >
+                      <Image
+                        src={photo.url}
+                        alt={photo.title}
+                        fill
+                        sizes="64px"
+                        className="object-cover object-center"
+                      />
+                      <span className="absolute bottom-0.5 right-1 font-mono text-[7px] text-white font-bold drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
+                        {pIdx === 0 ? "3D" : `0${pIdx + 1}`}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+      ) : activeItem.id === "fesco" ? (
+        <div className="hidden lg:flex absolute top-24 xl:top-28 left-[530px] xl:left-[590px] right-[230px] xl:right-[260px] bottom-6 z-20 pointer-events-auto flex-col justify-between items-start">
+          {renderFescoShowcase(false)}
+        </div>
+      ) : activeItem.galleryPhotos && activeItem.galleryPhotos.length > 0 ? (
+        <div className="hidden lg:flex absolute top-32 xl:top-36 left-[560px] xl:left-[620px] right-[240px] xl:right-[280px] bottom-10 z-20 pointer-events-auto flex-col justify-end items-start">
+          {renderPhotoGallery(false)}
+        </div>
+      ) : activeItem.id === "arlan" ? (
         <div className="absolute inset-0 z-10 pointer-events-auto">
           <FieldLogCanvas3D />
         </div>
@@ -148,7 +406,7 @@ export default function FieldLogModal({
       {/* ============================================================ */}
       <div className="absolute top-28 sm:top-36 right-6 sm:right-10 md:right-16 z-20 flex flex-col gap-2.5 sm:gap-3 pointer-events-auto">
         <span className="font-pixel-grid text-mono-label tracking-mono-bracket text-muted/50 uppercase mb-1">
-          [ 04 WORKS ]
+          [ 0{FIELD_LOG_DATA.length} WORKS ]
         </span>
         {FIELD_LOG_DATA.map((item) => {
           const isSelected = item.id === activeItem.id;
@@ -233,7 +491,37 @@ export default function FieldLogModal({
               </span>
             </div>
           )}
+
+          {/* Brand Palette for Fesco */}
+          {activeItem.id === "fesco" && (
+            <div className="flex items-start text-xs sm:text-[13px] leading-relaxed">
+              <span className="w-24 sm:w-28 text-muted shrink-0 font-sans">
+                Palette
+              </span>
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                <span className="inline-flex items-center gap-1 font-mono text-[10px] text-chalk/90 bg-white/5 border border-hairline px-1.5 py-0.5 rounded-micro">
+                  <span className="w-2.5 h-2.5 rounded-[2px] bg-[#FF1313] inline-block border border-white/20" />
+                  #FF1313
+                </span>
+                <span className="inline-flex items-center gap-1 font-mono text-[10px] text-chalk/90 bg-white/5 border border-hairline px-1.5 py-0.5 rounded-micro">
+                  <span className="w-2.5 h-2.5 rounded-[2px] bg-[#76332D] inline-block border border-white/20" />
+                  #76332D
+                </span>
+                <span className="inline-flex items-center gap-1 font-mono text-[10px] text-chalk/90 bg-white/5 border border-hairline px-1.5 py-0.5 rounded-micro">
+                  <span className="w-2.5 h-2.5 rounded-[2px] bg-[#FFFBEC] inline-block border border-white/20" />
+                  #FFFBEC
+                </span>
+                <span className="inline-flex items-center gap-1 font-mono text-[10px] text-chalk/90 bg-white/5 border border-hairline px-1.5 py-0.5 rounded-micro">
+                  <span className="w-2.5 h-2.5 rounded-[2px] bg-[#373130] inline-block border border-white/20" />
+                  #373130
+                </span>
+              </div>
+            </div>
+          )}
         </div>
+
+        {/* Mobile Photo Gallery Showcase (Visible only on screens < lg) */}
+        {activeItem.id === "fesco" ? renderFescoShowcase(true) : renderPhotoGallery(true)}
 
         {/* Shortened Responsibilities / Events (Underneath Metadata) */}
         <div className="pt-4 space-y-3.5">
@@ -311,7 +599,7 @@ export default function FieldLogModal({
       >
         <div>
           <div className="flex items-center justify-between pb-4 mb-4 border-b border-hairline font-mono text-[10px] tracking-[0.2em] uppercase text-muted">
-            <span>[ 04 WORKS INDEX ]</span>
+            <span>[ 0{FIELD_LOG_DATA.length} WORKS INDEX ]</span>
             <span
               className="text-muted hover:text-chalk cursor-pointer"
               onClick={() => setIsSidebarOpen(false)}
@@ -381,9 +669,56 @@ export default function FieldLogModal({
 
         <div className="pt-3 border-t border-hairline font-mono text-[9px] text-muted flex justify-between">
           <span>MOVE CURSOR OUT TO CLOSE</span>
-          <span>4 ENTRIES</span>
+          <span>{FIELD_LOG_DATA.length} ENTRIES</span>
         </div>
       </aside>
+
+      {/* ============================================================ */}
+      {/* 6. FULLSCREEN HIGH-RES LIGHTBOX MODAL FOR FESCO PRESENTATION */}
+      {/* ============================================================ */}
+      {isLightboxOpen && (
+        <div
+          className="fixed inset-0 z-[100000] bg-black/95 backdrop-blur-2xl flex flex-col justify-between p-4 sm:p-6 select-none animate-fadeIn"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Fesco Brand Presentation Fullscreen"
+        >
+          {/* Top Bar */}
+          <div className="flex items-center justify-between w-full max-w-4xl mx-auto pb-4 border-b border-hairline font-mono text-[10px] sm:text-xs tracking-mono-bracket text-muted uppercase">
+            <div className="flex items-center gap-2 text-chalk">
+              <span className="inline-block w-2 h-2 rounded-full bg-[#FF1313] animate-pulse" />
+              <span>[ FESCO // BRAND IDENTITY & GUIDELINES DOSSIER ]</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsLightboxOpen(false)}
+              className="text-chalk hover:text-white px-3 py-1 rounded-micro border border-hairline hover:border-chalk text-xs font-mono cursor-pointer transition-colors"
+            >
+              CLOSE [ ESC ] ✕
+            </button>
+          </div>
+
+          {/* Centered Scrollable Canvas */}
+          <div className="flex-1 w-full max-w-2xl mx-auto overflow-y-auto scrollbar-thin py-6 flex justify-center items-start">
+            <div className="relative w-full max-w-[500px] rounded-sm overflow-hidden border border-white/20 shadow-2xl bg-surface">
+              <Image
+                src="/projects/fesco-brand-presentation.png"
+                alt="FESCO Brand Identity Presentation Fullscreen"
+                width={356}
+                height={1024}
+                className="w-full h-auto block"
+                priority
+              />
+            </div>
+          </div>
+
+          {/* Bottom Bar Info */}
+          <div className="w-full max-w-4xl mx-auto pt-3 border-t border-hairline font-mono text-[9px] sm:text-[10px] text-muted flex flex-col sm:flex-row items-center justify-between gap-1">
+            <span>ABOUT THE BRAND · IBU SYAHRINI · PALETTE #FF1313 #76332D #FFFBEC #373130</span>
+            <span className="text-chalk/70">SCROLL DOWN TO INSPECT FULL ARTWORK</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

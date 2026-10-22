@@ -1,3 +1,10 @@
+export interface GalleryPhoto {
+  url: string;
+  title: string;
+  caption: string;
+  isWide?: boolean;
+}
+
 export interface FieldLogItem {
   id: string;
   slug: string;
@@ -19,14 +26,74 @@ export interface FieldLogItem {
   organizations?: string[];
   majorEvents?: string[];
   categoryTag: "SUBSURFACE" | "EXPLORATION" | "ENGINEERING" | "IDENTITY";
+  presentationImage?: string;
+  presentationTitle?: string;
+  presentationCaption?: string;
+  galleryPhotos?: GalleryPhoto[];
 }
 
 export const FIELD_LOG_DATA: FieldLogItem[] = [
-  // 1. ARLAN (IDENTITY / DIGITAL GEOLOGY)
+  // 1. FESCO (BRAND IDENTITY & PACKAGING DESIGN)
+  {
+    id: "fesco",
+    slug: "fesco",
+    index: "01",
+    name: "Fesco",
+    titlePart1: "Fesco",
+    badge: "BRAND",
+    titlePart2: "Design",
+    company: "FESCO Bakery (Founder: Ibu Syahrini)",
+    location: "Indonesia",
+    role: "Brand & Packaging Designer",
+    project: "Brand Identity, Typography & Visual Packaging Suite",
+    period: "2024 – 2025",
+    since: "2024",
+    tools: ["Adobe Illustrator", "Photoshop", "Brand Architecture", "Packaging Design", "Creative Direction"],
+    scopeTitle: "Brand Story & Guidelines",
+    presentationImage: "/projects/fesco-brand-presentation.png",
+    presentationTitle: "FESCO Brand Identity & Packaging Guidelines",
+    presentationCaption: "Official brand dossier: brand origin story, custom fluid logotype system, color hierarchy, and confectionery product presentation.",
+    responsibilities: [
+      "About The Brand: FESCO dibangun dari hobi langsung oleh founder Ibu Syahrini dengan perhatian, rasa, dan ketulusan mendalam pada cokelat & brownies",
+      "Naming: FES (inisial founder & pembuat, Ibu Syahrini) + CO (Company & Chocolate) — usaha yang tumbuh dari kecintaan pada cokelat",
+      "Brand Philosophy: Menghadirkan kebahagiaan sederhana lewat brownies pekat dan lembut untuk menghangatkan momen berbagi di sekitar meja",
+      "Color Palette: Vermilion Red (#FF1313) · Cocoa Brown (#76332D) · Warm Ivory (#FFFBEC) · Deep Chocolate (#373130)",
+      "Visual Deliverables: Fluid ligature logotype, dynamic typography wrapping, sweet-treat packaging system & campaign collateral",
+    ],
+    categoryTag: "IDENTITY",
+    galleryPhotos: [
+      {
+        url: "/projects/fesco-01-logotype.png",
+        title: "Fesco Fluid Brandmark Logotype",
+        caption: "Custom bold red logotype and fluid ligature design for modern confectionery branding.",
+        isWide: true,
+      },
+      {
+        url: "/projects/fesco-02-pastry-treat.png",
+        title: "Pastry Campaign & Packaging Palette",
+        caption: "Warm cocoa backdrop paired with chocolate chip almond pastry and brand messaging.",
+        isWide: true,
+      },
+      {
+        url: "/projects/fesco-03-brownie-special.png",
+        title: "Fudgy Brownie Product Reveal",
+        caption: "High-contrast dynamic typographic wrap showcasing premium almond chocolate brownies.",
+        isWide: true,
+      },
+      {
+        url: "/projects/fesco-04-product-showcase.png",
+        title: "Duo Confectionery Split-Wave Showcase",
+        caption: "Dual product hero composition featuring signature wavy color-blocked backdrop.",
+        isWide: true,
+      },
+    ],
+  },
+
+  // 2. ARLAN (IDENTITY / DIGITAL GEOLOGY)
   {
     id: "arlan",
     slug: "arlan",
-    index: "01",
+    index: "02",
     name: "Arlan",
     titlePart1: "Prastyo",
     badge: "CREATIVE",
@@ -45,13 +112,39 @@ export const FIELD_LOG_DATA: FieldLogItem[] = [
       "Digital archiving of geological fieldwork, certifications, and technical credentials",
     ],
     categoryTag: "IDENTITY",
+    galleryPhotos: [
+      {
+        url: "/projects/arlan-01-hero-3d.jpg",
+        title: "Hero 3D Stage & Kinetic Typography",
+        caption: "Real-time 3D character viewport with interactive kinetic floor shader, status coordinates, and brutalist header.",
+        isWide: true,
+      },
+      {
+        url: "/projects/arlan-02-ascii-shader.jpg",
+        title: "Optical Matrix ASCII Text Shader",
+        caption: "Dynamic optical canvas shader decomposing photographic portraits into live interactive ASCII characters.",
+        isWide: true,
+      },
+      {
+        url: "/projects/arlan-03-subsurface-architecture.jpg",
+        title: "Torn-Paper Dither Editorial Suite",
+        caption: "Procedural torn-paper SVG dither masks paired with bold brutalist subsurface engineering capabilities.",
+        isWide: true,
+      },
+      {
+        url: "/projects/arlan-04-field-log-dossier.jpg",
+        title: "Technical Field Log Dossier Modal",
+        caption: "Minimalist archive modal with Locomotive-inspired typography, trapezoid outline badge, and 3D subsurface block.",
+        isWide: true,
+      },
+    ],
   },
 
-  // 2. GEOLOGICAL ENGINEERING (ITERA)
+  // 3. GEOLOGICAL ENGINEERING (ITERA)
   {
     id: "geological-engineering",
     slug: "geological-engineering",
-    index: "02",
+    index: "03",
     name: "Geological Engineering",
     titlePart1: "Geological",
     badge: "ENG",
@@ -75,13 +168,27 @@ export const FIELD_LOG_DATA: FieldLogItem[] = [
       "Annual Geological Field Excursions & Industry Company Visits",
     ],
     categoryTag: "ENGINEERING",
+    galleryPhotos: [
+      {
+        url: "/projects/geological-engineering-01-riverbed-mapping.jpg",
+        title: "Regional Geological Mapping & Outcrop Analysis",
+        caption: "Field orientation, lithological outcrop observation, and structural data collection along Sumatra river transects.",
+        isWide: false,
+      },
+      {
+        url: "/projects/geological-engineering-02-rapids-fieldwork.jpg",
+        title: "Sumatra Rainforest Field Excursion",
+        caption: "Field mapping campaign, stratigraphy measurement, and sedimentological fieldwork in South Sumatra terrain.",
+        isWide: false,
+      },
+    ],
   },
 
-  // 3. UNDERGRADUATE RESEARCHER (PT PHR)
+  // 4. UNDERGRADUATE RESEARCHER (PT PHR)
   {
     id: "undergraduate-researcher",
     slug: "undergraduate-researcher",
-    index: "03",
+    index: "04",
     name: "Undergraduate Researcher",
     titlePart1: "Undergraduate",
     badge: "RES",
@@ -102,13 +209,39 @@ export const FIELD_LOG_DATA: FieldLogItem[] = [
       "Stratigraphic correlation and basin evolution interpretation to support exploration studies",
     ],
     categoryTag: "SUBSURFACE",
+    galleryPhotos: [
+      {
+        url: "/projects/undergraduate-01-microscope.jpg",
+        title: "Biostratigraphic Laboratory Research",
+        caption: "Microscopic inspection of planktonic foraminifera & nannoplankton for relative age zonation (Blow, 1969; Martini, 1971).",
+        isWide: false,
+      },
+      {
+        url: "/projects/undergraduate-02-landmark.jpg",
+        title: "PT Pertamina Hulu Rokan Base",
+        caption: "Field orientation & research assignment at PT Pertamina Hulu Rokan, Rumbai, Central Sumatra Basin.",
+        isWide: false,
+      },
+      {
+        url: "/projects/undergraduate-03-core-team.jpg",
+        title: "Subsurface Core Repository Team",
+        caption: "Sedimentological & sequence stratigraphic evaluation with geological mentorship team across 14 exploration well cores.",
+        isWide: true,
+      },
+      {
+        url: "/projects/undergraduate-04-core-facility.jpg",
+        title: "Core Warehouse & Stratigraphic Inspection",
+        caption: "Direct subsurface core examination and reservoir rock sampling with laboratory technical specialists.",
+        isWide: false,
+      },
+    ],
   },
 
-  // 4. WORK PRACTICE (PT PHR)
+  // 5. WORK PRACTICE (PT PHR)
   {
     id: "work-practice",
     slug: "work-practice",
-    index: "04",
+    index: "05",
     name: "Work Practice",
     titlePart1: "Exploration",
     badge: "EXP",
@@ -130,5 +263,19 @@ export const FIELD_LOG_DATA: FieldLogItem[] = [
       "Stratigraphic correlation and paleogeographic reconstruction for exploration studies",
     ],
     categoryTag: "EXPLORATION",
+    galleryPhotos: [
+      {
+        url: "/projects/work-practice-01-core-logging.jpg",
+        title: "Core Logging & Reservoir Evaluation",
+        caption: "Direct macroscopic core description, lithology logging, and sample measurements at PT PHR core repository.",
+        isWide: false,
+      },
+      {
+        url: "/projects/work-practice-02-pertamina-lobby.jpg",
+        title: "PT Pertamina Hulu Rokan Headquarters",
+        caption: "Exploration work practice internship assignment in Pekanbaru, Central Sumatra Basin.",
+        isWide: false,
+      },
+    ],
   },
 ];

@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import Image from "next/image";
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -10,11 +11,15 @@ gsap.registerPlugin(useGSAP, ScrollTrigger);
 interface CardData {
   title: string;
   subtitle?: string;
-  bgClass: string;
+  bgClass?: string;
   bgHex?: string;
   textHex?: string;
   accentColor?: string;
-  type: "graphic" | "photo" | "quote" | "branding";
+  type: "graphic" | "photo" | "quote" | "branding" | "pure-photo";
+  imageUrl?: string;
+  imageAlt?: string;
+  isWide?: boolean;
+  photoIndex?: number;
 }
 
 interface ProjectCase {
@@ -29,6 +34,52 @@ interface ProjectCase {
 
 const PROJECTS: ProjectCase[] = [
   {
+    id: "fesco",
+    title: "Fesco",
+    year: "2025",
+    categories: ["BRANDING", "DESIGN"],
+    tags: ["BRANDING", "DESIGN"],
+    actionText: "( + )",
+    cards: [
+      {
+        title: "Fesco Fluid Brandmark Logotype",
+        subtitle: "BRAND IDENTITY",
+        type: "pure-photo",
+        imageUrl: "/projects/fesco-01-logotype.png",
+        imageAlt: "Fesco bold red fluid brandmark logotype on cream background",
+        isWide: true,
+        photoIndex: 0,
+      },
+      {
+        title: "Pastry Campaign & Packaging Palette",
+        subtitle: "PACKAGING",
+        type: "pure-photo",
+        imageUrl: "/projects/fesco-02-pastry-treat.png",
+        imageAlt: "Fesco chocolate chip almond pastry treat on warm brown background",
+        isWide: true,
+        photoIndex: 1,
+      },
+      {
+        title: "Fudgy Brownie Product Reveal",
+        subtitle: "CREATIVE SUITE",
+        type: "pure-photo",
+        imageUrl: "/projects/fesco-03-brownie-special.png",
+        imageAlt: "Fesco almond brownie with dynamic typography on red background",
+        isWide: true,
+        photoIndex: 2,
+      },
+      {
+        title: "Duo Confectionery Split-Wave Showcase",
+        subtitle: "CAMPAIGN",
+        type: "pure-photo",
+        imageUrl: "/projects/fesco-04-product-showcase.png",
+        imageAlt: "Fesco duo product showcase with wavy red and cream color split",
+        isWide: true,
+        photoIndex: 3,
+      },
+    ],
+  },
+  {
     id: "arlan",
     title: "Arlan",
     year: "2026",
@@ -37,37 +88,40 @@ const PROJECTS: ProjectCase[] = [
     actionText: "( + )",
     cards: [
       {
-        title: "JACK & AI",
-        subtitle: "DORST & LESSER",
-        bgClass: "bg-[#E63B2E] text-black",
-        bgHex: "#E63B2E",
-        textHex: "#000000",
-        type: "graphic",
+        title: "Hero 3D Stage & Kinetic Typography",
+        subtitle: "3D HERO",
+        type: "pure-photo",
+        imageUrl: "/projects/arlan-01-hero-3d.jpg",
+        imageAlt: "Hero 3D canvas with character, kinetic grid, and bold typography",
+        isWide: true,
+        photoIndex: 0,
       },
       {
-        title: "CAMPAIGN",
-        subtitle: "FALL COLLECTION",
-        bgClass: "bg-[#252828] text-[#F9F4EB]",
-        bgHex: "#252828",
-        textHex: "#F9F4EB",
-        type: "photo",
+        title: "Optical Matrix ASCII Text Shader",
+        subtitle: "ASCII SHADER",
+        type: "pure-photo",
+        imageUrl: "/projects/arlan-02-ascii-shader.jpg",
+        imageAlt: "Optical matrix ASCII text shader portrait interface",
+        isWide: true,
+        photoIndex: 1,
       },
       {
-        title: "WE SPOT SOCIAL TRENDS BEFORE THEY BREAK.",
-        subtitle: "CASE",
-        bgClass: "bg-[#111212] text-[#F9F4EB]",
-        bgHex: "#111212",
-        textHex: "#F9F4EB",
-        accentColor: "#E63B2E",
-        type: "quote",
+        title: "Torn-Paper Dither Editorial Suite",
+        subtitle: "EDITORIAL UI",
+        type: "pure-photo",
+        imageUrl: "/projects/arlan-03-subsurface-architecture.jpg",
+        imageAlt: "Torn-paper dither contour mask and digital subsurface section",
+        isWide: true,
+        photoIndex: 2,
       },
       {
-        title: "INSIGHT AGENCY",
-        subtitle: "IDENTITY",
-        bgClass: "bg-[#1E2020] text-[#F9F4EB]",
-        bgHex: "#1E2020",
-        textHex: "#F9F4EB",
-        type: "branding",
+        title: "Technical Field Log Dossier Modal",
+        subtitle: "FIELD LOG MODAL",
+        type: "pure-photo",
+        imageUrl: "/projects/arlan-04-field-log-dossier.jpg",
+        imageAlt: "Field log technical archive modal with 3D geological wireframe",
+        isWide: true,
+        photoIndex: 3,
       },
     ],
   },
@@ -80,36 +134,22 @@ const PROJECTS: ProjectCase[] = [
     actionText: "( + )",
     cards: [
       {
-        title: "WELLNESS & MOTION",
-        subtitle: "STUDIO SYSTEM",
-        bgClass: "bg-[#2A2E2A] text-[#F9F4EB]",
-        bgHex: "#2A2E2A",
-        textHex: "#F9F4EB",
-        type: "photo",
+        title: "Regional Geological Mapping & Outcrop Analysis",
+        subtitle: "FIELD MAPPING",
+        type: "pure-photo",
+        imageUrl: "/projects/geological-engineering-01-riverbed-mapping.jpg",
+        imageAlt: "Arlan conducting geological outcrop observation in Sumatra riverbed",
+        isWide: false,
+        photoIndex: 0,
       },
       {
-        title: "MOOV",
-        subtitle: "ECO PACKAGING",
-        bgClass: "bg-[#B88958] text-black",
-        bgHex: "#B88958",
-        textHex: "#000000",
-        type: "branding",
-      },
-      {
-        title: "INTELLIGENT RUNNING",
-        subtitle: "DIGITAL PLATFORM",
-        bgClass: "bg-[#1A2226] text-[#F9F4EB]",
-        bgHex: "#1A2226",
-        textHex: "#F9F4EB",
-        type: "graphic",
-      },
-      {
-        title: "MOVEMENT FOR ALL",
-        subtitle: "MANIFESTO",
-        bgClass: "bg-[#232727] text-[#F9F4EB]",
-        bgHex: "#232727",
-        textHex: "#F9F4EB",
-        type: "quote",
+        title: "Sumatra Rainforest Field Excursion",
+        subtitle: "EXCURSION",
+        type: "pure-photo",
+        imageUrl: "/projects/geological-engineering-02-rapids-fieldwork.jpg",
+        imageAlt: "Arlan in yellow ITERA field vest standing on rocky river rapids",
+        isWide: false,
+        photoIndex: 1,
       },
     ],
   },
@@ -122,36 +162,40 @@ const PROJECTS: ProjectCase[] = [
     actionText: "( + )",
     cards: [
       {
-        title: "SUSTAINABILITY",
-        subtitle: "REPORT 2026",
-        bgClass: "bg-[#243324] text-[#F9F4EB]",
-        bgHex: "#243324",
-        textHex: "#F9F4EB",
-        type: "photo",
+        title: "Biostratigraphic Laboratory Research",
+        subtitle: "LAB RESEARCH",
+        type: "pure-photo",
+        imageUrl: "/projects/undergraduate-01-microscope.jpg",
+        imageAlt: "Biostratigraphic laboratory inspection with binocular microscope",
+        isWide: false,
+        photoIndex: 0,
       },
       {
-        title: "CIRCULAR DESIGN",
-        subtitle: "STRATEGY",
-        bgClass: "bg-[#141C14] text-[#9ACD32]",
-        bgHex: "#141C14",
-        textHex: "#9ACD32",
-        type: "graphic",
+        title: "PT Pertamina Hulu Rokan Base",
+        subtitle: "RUMBAI BASE",
+        type: "pure-photo",
+        imageUrl: "/projects/undergraduate-02-landmark.jpg",
+        imageAlt: "Prastyo Arlan at PT Pertamina Hulu Rokan Rumbai",
+        isWide: false,
+        photoIndex: 1,
       },
       {
-        title: "ROOTED IN NATURE",
-        subtitle: "ECO IDENTITY",
-        bgClass: "bg-[#2E362C] text-[#F9F4EB]",
-        bgHex: "#2E362C",
-        textHex: "#F9F4EB",
-        type: "branding",
+        title: "Subsurface Core Repository Team",
+        subtitle: "SUBSURFACE CORE",
+        type: "pure-photo",
+        imageUrl: "/projects/undergraduate-03-core-team.jpg",
+        imageAlt: "Geological research team at subsurface core repository",
+        isWide: true,
+        photoIndex: 2,
       },
       {
-        title: "FUTURE HABITAT",
-        subtitle: "VISION",
-        bgClass: "bg-[#1B221B] text-[#F9F4EB]",
-        bgHex: "#1B221B",
-        textHex: "#F9F4EB",
-        type: "quote",
+        title: "Core Warehouse & Stratigraphic Inspection",
+        subtitle: "RESERVOIR LOGGING",
+        type: "pure-photo",
+        imageUrl: "/projects/undergraduate-04-core-facility.jpg",
+        imageAlt: "Core warehouse inspection with technical specialists",
+        isWide: false,
+        photoIndex: 3,
       },
     ],
   },
@@ -164,50 +208,25 @@ const PROJECTS: ProjectCase[] = [
     actionText: "( + )",
     cards: [
       {
-        title: "BIOTECH VISION",
-        subtitle: "3D LAB",
-        bgClass: "bg-[#091526] text-[#93C5FD]",
-        bgHex: "#091526",
-        textHex: "#93C5FD",
-        type: "photo",
+        title: "Core Logging & Reservoir Evaluation",
+        subtitle: "CORE ANALYSIS",
+        type: "pure-photo",
+        imageUrl: "/projects/work-practice-01-core-logging.jpg",
+        imageAlt: "Macroscopic core description and logging on core table",
+        isWide: false,
+        photoIndex: 0,
       },
       {
-        title: "NEURONS.AI",
-        subtitle: "ENTERPRISE",
-        bgClass: "bg-[#0B1E38] text-[#60A5FA]",
-        bgHex: "#0B1E38",
-        textHex: "#60A5FA",
-        type: "graphic",
-      },
-      {
-        title: "DATA INTELLIGENCE",
-        subtitle: "PLATFORM",
-        bgClass: "bg-[#040A14] text-[#F9F4EB]",
-        bgHex: "#040A14",
-        textHex: "#F9F4EB",
-        type: "branding",
-      },
-      {
-        title: "AI TRANSFORMATION",
-        subtitle: "RESEARCH",
-        bgClass: "bg-[#071220] text-[#60A5FA]",
-        bgHex: "#071220",
-        textHex: "#60A5FA",
-        type: "quote",
+        title: "PT Pertamina Hulu Rokan Headquarters",
+        subtitle: "EXPLORATION",
+        type: "pure-photo",
+        imageUrl: "/projects/work-practice-02-pertamina-lobby.jpg",
+        imageAlt: "Prastyo Arlan at PT Pertamina Hulu Rokan and SKK Migas lobby",
+        isWide: false,
+        photoIndex: 1,
       },
     ],
   },
-];
-
-const BLOCK_1_DESKTOP = [
-  "From subsurface data interpretation to",
-  "field exploration, I turn geological complexity",
-  "into actionable insights.",
-];
-
-const BLOCK_2_DESKTOP = [
-  "Here’s a taste of the work I’ve loved doing",
-  "and the real-world projects I’ve helped bring to life.",
 ];
 
 export default function FeaturedWorkSection() {
@@ -217,106 +236,145 @@ export default function FeaturedWorkSection() {
 
   useGSAP(
     () => {
-      // 1. Initial States
-      const isDesktop = window.innerWidth >= 1024;
-      
-      gsap.set(".desktop-line-1, .desktop-line-2, .mobile-line-1, .mobile-line-2", {
-        y: 40,
-        opacity: 0,
-        filter: "blur(8px)",
-      });
-      
-      gsap.set(".project-row", {
-        y: 40,
-        opacity: 0,
-        filter: "blur(4px)",
-      });
-      
-      gsap.set(".project-card", {
-        y: 20,
-        scale: 0.96,
-        opacity: 0,
-      });
+      const mm = gsap.matchMedia();
 
-      // 2. Intersection Observer for accurate physical viewport entry
-      // (Because this section is wrapped in a translate3d container, ScrollTrigger 
-      // cannot calculate natural offset. IntersectionObserver sees physical reality.)
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              const target = entry.target;
+      mm.add("all", () => {
+        // 1. Initial States (Option B starting position)
+        gsap.set(".work-headline-block", {
+          y: 40,
+          opacity: 0,
+          filter: "blur(8px)",
+        });
 
-              // HEADLINE REVEAL
-              if (target === headlineRef.current) {
-                const tl = gsap.timeline({ defaults: { ease: "expo.out" } });
-                const targets1 = isDesktop ? ".desktop-line-1" : ".mobile-line-1";
-                const targets2 = isDesktop ? ".desktop-line-2" : ".mobile-line-2";
-                
-                tl.to(targets1, {
-                  y: 0,
-                  opacity: 1,
-                  filter: "blur(0px)",
-                  duration: 1.2,
-                  stagger: isDesktop ? 0.08 : 0,
-                }).to(
-                  targets2,
-                  {
-                    y: 0,
-                    opacity: 1,
-                    filter: "blur(0px)",
-                    duration: 1.2,
-                    stagger: isDesktop ? 0.08 : 0,
-                  },
-                  "-=0.95"
-                );
-                observer.unobserve(target);
-              }
-              
-              // PROJECT ROW REVEAL
-              if (target.classList.contains("project-row")) {
-                const cards = target.querySelectorAll(".project-card");
-                const tl = gsap.timeline({ defaults: { ease: "expo.out" } });
-                
-                tl.to(target, {
-                  y: 0,
-                  opacity: 1,
-                  filter: "blur(0px)",
-                  duration: 1.0,
-                });
-                
-                if (cards.length > 0) {
-                  tl.to(
-                    cards,
-                    {
-                      y: 0,
-                      opacity: 1,
-                      scale: 1,
-                      duration: 0.85,
-                      stagger: 0.05,
-                    },
-                    "-=0.8"
-                  );
-                }
-                observer.unobserve(target);
-              }
-            }
+        gsap.set(".project-row", {
+          y: 40,
+          opacity: 0,
+          filter: "blur(4px)",
+        });
+
+        gsap.set(".project-card", {
+          y: 20,
+          scale: 0.96,
+          opacity: 0,
+        });
+
+        const playHeadline = () => {
+          gsap.to(".work-headline-block", {
+            y: 0,
+            opacity: 1,
+            filter: "blur(0px)",
+            duration: 1.0,
+            stagger: 0.14,
+            ease: "expo.out",
+            overwrite: "auto",
+            clearProps: "filter",
           });
-        },
-        { rootMargin: "0px 0px -10% 0px", threshold: 0.01 }
-      );
+        };
 
-      // Attach observer to headline
-      if (headlineRef.current) {
-        observer.observe(headlineRef.current);
-      }
+        const resetHeadline = () => {
+          gsap.to(".work-headline-block", {
+            y: 40,
+            opacity: 0,
+            filter: "blur(8px)",
+            duration: 0.35,
+            ease: "power2.in",
+            overwrite: "auto",
+          });
+        };
 
-      // Attach observer to all rows
-      rowsRef.current.forEach((row) => {
-        if (row) observer.observe(row);
+        const playRow = (target: HTMLElement) => {
+          const cards = target.querySelectorAll(".project-card");
+          const tl = gsap.timeline({ defaults: { ease: "expo.out" } });
+
+          tl.to(target, {
+            y: 0,
+            opacity: 1,
+            filter: "blur(0px)",
+            duration: 0.9,
+            overwrite: "auto",
+          });
+
+          if (cards.length > 0) {
+            tl.to(
+              cards,
+              {
+                y: 0,
+                opacity: 1,
+                scale: 1,
+                duration: 0.75,
+                stagger: 0.04,
+                overwrite: "auto",
+              },
+              "-=0.75"
+            );
+          }
+        };
+
+        const resetRow = (target: HTMLElement) => {
+          const cards = target.querySelectorAll(".project-card");
+          gsap.to(target, {
+            y: 40,
+            opacity: 0,
+            filter: "blur(4px)",
+            duration: 0.35,
+            ease: "power2.in",
+            overwrite: "auto",
+          });
+          if (cards.length > 0) {
+            gsap.to(cards, {
+              y: 20,
+              scale: 0.96,
+              opacity: 0,
+              duration: 0.3,
+              ease: "power2.in",
+              overwrite: "auto",
+            });
+          }
+        };
+
+        // 2. Option B State Machine (toggleActions: "play none none reset")
+        // - onEnter (entering from bottom): PLAY
+        // - onLeave (scrolling down past it): NONE (stays visible)
+        // - onEnterBack (scrolling up into it): NONE (stays visible, no flicker/reset while reading)
+        // - onLeaveBack (scrolling all the way up above it): RESET (resets to y:40 so it can replay)
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              const target = entry.target as HTMLElement;
+              const isEntering = entry.isIntersecting;
+              const isAbove = entry.boundingClientRect.top > 0;
+
+              if (isEntering && isAbove) {
+                // onEnter: PLAY
+                if (target === headlineRef.current) {
+                  playHeadline();
+                } else if (target.classList.contains("project-row")) {
+                  playRow(target);
+                }
+              } else if (!isEntering && isAbove) {
+                // onLeaveBack: RESET
+                if (target === headlineRef.current) {
+                  resetHeadline();
+                } else if (target.classList.contains("project-row")) {
+                  resetRow(target);
+                }
+              }
+            });
+          },
+          { rootMargin: "0px 0px -10% 0px", threshold: 0.02 }
+        );
+
+        if (headlineRef.current) observer.observe(headlineRef.current);
+        rowsRef.current.forEach((row) => {
+          if (row) observer.observe(row);
+        });
+
+        return () => observer.disconnect();
       });
 
-      return () => observer.disconnect();
+      document.fonts?.ready.then(() => ScrollTrigger.refresh());
+
+      return () => mm.revert();
     },
     { scope: sectionRef }
   );
@@ -341,65 +399,17 @@ export default function FeaturedWorkSection() {
           </div>
 
           {/* Main Statement Heading Container */}
-          <div className="w-full max-w-[1040px]">
+          <div className="w-full max-w-[1180px]">
             <h2
               ref={headlineRef}
-              aria-label="From subsurface data interpretation to field exploration, I turn geological complexity into actionable insights. Here’s a taste of the work I’ve loved doing and the real-world projects I’ve helped bring to life."
-              className="text-white text-left"
+              className="text-[#F9F4EB] text-left text-h2 leading-[1.15]"
             >
-              {/* DESKTOP PRESENTATION (lg and up): 5 Intentional Lines across 2 Blocks */}
-              <div
-                className="hidden lg:block text-h2"
-                aria-hidden="true"
-              >
-                {/* Block 1: Positioning Statement (3 lines) */}
-                <div className="flex flex-col">
-                  {BLOCK_1_DESKTOP.map((line, idx) => (
-                    <span key={idx} className="block">
-                      <span className="desktop-line-1 block will-change-[transform,opacity,filter]">
-                        {line}
-                      </span>
-                    </span>
-                  ))}
-                </div>
-
-                {/* Intentional breathing room between positioning and invitation */}
-                <div className="h-[clamp(24px,2.5vw,48px)]" />
-
-                {/* Block 2: Invitation / Transition (2 lines) */}
-                <div className="flex flex-col">
-                  {BLOCK_2_DESKTOP.map((line, idx) => (
-                    <span key={idx} className="block">
-                      <span className="desktop-line-2 block will-change-[transform,opacity,filter]">
-                        {line}
-                      </span>
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* MOBILE / TABLET PRESENTATION (< lg): Natural Fluid Semantic Wrapping */}
-              <div
-                className="block lg:hidden text-h2"
-                aria-hidden="true"
-              >
-                {/* Block 1: Positioning */}
-                <div className="block">
-                  <span className="mobile-line-1 block will-change-[transform,opacity,filter]">
-                    From subsurface data interpretation to field exploration, I turn geological complexity into actionable insights.
-                  </span>
-                </div>
-
-                {/* Intentional breathing room */}
-                <div className="h-[clamp(20px,4vw,28px)]" />
-
-                {/* Block 2: Invitation */}
-                <div className="block">
-                  <span className="mobile-line-2 block will-change-[transform,opacity,filter]">
-                    Here’s a taste of the work I’ve loved doing and the real-world projects I’ve helped bring to life.
-                  </span>
-                </div>
-              </div>
+              <span className="work-headline-block block text-balance">
+                geology taught me to make sense of complexity.
+              </span>
+              <span className="work-headline-block block text-balance">
+                here&apos;s some of the experiences and work i&apos;m proud of.
+              </span>
             </h2>
           </div>
         </div>
@@ -411,7 +421,7 @@ export default function FeaturedWorkSection() {
               <div
                 key={project.id}
                 ref={(el) => { rowsRef.current[index] = el; }}
-                className="project-row w-full border-b border-white/15 py-5 lg:py-6 px-3 sm:px-5 lg:px-6 xl:px-8 will-change-[transform,opacity,filter]"
+                className="project-row w-full border-b border-white/15 py-5 lg:py-6 px-3 sm:px-5 lg:px-6 xl:px-8"
               >
                 {/* Main Row Content: 120px height on desktop, matching lamalama (total row = 24 + 120 + 24 + 1 = 169px) */}
                 <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4 lg:gap-8 lg:h-[120px]">
@@ -470,9 +480,36 @@ export default function FeaturedWorkSection() {
                   >
                     {project.cards.map((card, idx) => {
                       const isWide =
-                        card.type === "graphic" ||
-                        (project.id === "geological-engineering" && card.title === "MOOV");
+                        card.isWide ??
+                        (card.type === "graphic" ||
+                          (project.id === "geological-engineering" && card.title === "MOOV"));
                       const cardWidthClass = isWide ? "w-[176px]" : "w-[96px]";
+
+                      if (card.type === "pure-photo" && card.imageUrl) {
+                        return (
+                          <button
+                            key={idx}
+                            type="button"
+                            aria-label={`View documentation: ${card.title} (${project.title})`}
+                            onClick={() => {
+                              window.location.hash = `field-log?job=${project.id}&photo=${card.photoIndex ?? idx}`;
+                            }}
+                            onMouseEnter={(e) => gsap.to(e.currentTarget, { scale: 1.03, duration: 0.25, ease: "power2.out" })}
+                            onMouseLeave={(e) => gsap.to(e.currentTarget, { scale: 1.0, duration: 0.25, ease: "power2.out" })}
+                            className={`project-card shrink-0 ${cardWidthClass} h-[120px] rounded-sm relative overflow-hidden select-none cursor-pointer will-change-transform outline-none focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 border border-white/15 bg-surface group/photo`}
+                          >
+                            <Image
+                              src={card.imageUrl}
+                              alt={card.imageAlt || card.title}
+                              fill
+                              sizes={isWide ? "176px" : "96px"}
+                              className="object-cover object-center transition-transform duration-500 ease-out group-hover/photo:scale-105"
+                            />
+                            {/* Pure photo tile - No text overlays, subtle hairline rim */}
+                            <div className="absolute inset-0 ring-1 ring-inset ring-white/10 pointer-events-none rounded-sm transition-opacity duration-300 group-hover/photo:ring-white/30" />
+                          </button>
+                        );
+                      }
 
                       return (
                         <button
@@ -488,7 +525,7 @@ export default function FeaturedWorkSection() {
                             backgroundColor: card.bgHex,
                             color: card.textHex,
                           }}
-                          className={`project-card shrink-0 ${cardWidthClass} h-[120px] rounded-sm p-2 flex flex-col justify-between text-left shadow-sm overflow-hidden select-none cursor-pointer will-change-transform outline-none focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 ${card.bgClass}`}
+                          className={`project-card shrink-0 ${cardWidthClass} h-[120px] rounded-sm p-2 flex flex-col justify-between text-left shadow-sm overflow-hidden select-none cursor-pointer will-change-transform outline-none focus-visible:outline-2 focus-visible:outline-white focus-visible:outline-offset-2 ${card.bgClass ?? ""}`}
                         >
                           {/* Inner Decorative Mockup Content - Screen Reader Hidden */}
                           <div aria-hidden="true" className="w-full h-full flex flex-col justify-between pointer-events-none">
